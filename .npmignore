@@ -1,0 +1,5 @@
+lib/
+.babelrc
+.eslint*
+webpack.config.js
+index.js

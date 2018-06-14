@@ -1,0 +1,40 @@
+.component-group-fields{
+  line-height: initial;
+
+  table{
+    border-collapse: collapse;
+    border: none;
+
+    thead{
+      tr{
+        th{
+          line-height: 36px;
+          font-weight: normal;
+        }
+      }
+    }
+
+    tbody{
+      tr{
+        &:not(:last-child){
+          td{
+            padding-bottom: .5em;
+          }
+        }
+      }
+    }
+
+    th,td{
+      border: none;
+      vertical-align: middle;
+
+      &:not(:last-child){
+        padding-right: .5em;
+      }
+    }
+
+    & + p{
+      margin-top: .5em;
+    }
+  }
+}

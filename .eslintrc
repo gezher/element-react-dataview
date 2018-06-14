@@ -1,0 +1,27 @@
+{
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "globals": {
+    "window": true,
+    "document": true
+  },
+  "rules": {
+    "import/no-unresolved": ["error", {
+      "ignore": [
+        "^react$",
+        "^react-dom$",
+        "^mobx$",
+        "^mobx-react$",
+        "^element-react$"
+      ]
+    }],
+    "import/extensions": ["error", "never"],
+    "react/prefer-stateless-function": "off",
+    "react/no-did-mount-set-state": "off",
+    "react/prop-types": 0,
+    "no-multiple-empty-lines": [2, {"max": 3}],
+    "class-methods-use-this": "off",
+    "consistant-return": "off",
+    "comma-dangle": [2, "never"]
+  }
+}

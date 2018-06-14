@@ -1,0 +1,41 @@
+@import "./colors.less";
+
+.component-tag-select{
+  &:after{
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  li{
+    list-style: none;
+    float: left;
+
+    .el-button{
+      height: 28px;
+      padding: 7px 9px;
+    }
+
+    .el-button--text{
+      color: @extra-light-black;
+
+      &:hover,&:focus{
+        color: @black;
+      }
+    }
+
+    .el-button--primary{
+      border-color: @extra-light-black;
+      background-color: @extra-light-black;
+
+      &:hover,&:focus{
+        border-color: @extra-light-black;
+        background-color: @extra-light-black;
+      }
+    }
+
+    + li{
+      margin-left: .5em;
+    }
+  }
+}

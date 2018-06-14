@@ -1,0 +1,72 @@
+@import "./colors.less";
+
+.block-dataview{
+  > h5{
+    margin-left: 1em;
+    font-size: 1em;
+
+    & + .simple-content{
+      margin: 1em 0 1em 4em;
+    }
+  }
+
+  > .description{
+    margin: .5em 0;
+    
+    ul{
+      margin: .5em 0;
+      padding-left: 1.5em;
+    }
+  }
+
+  > .operation-bar{
+    display: flex;
+    align-items: center;
+
+    aside{
+      flex-grow: 1;
+      text-align: right;
+
+      .sort-switch{
+        .el-switch{
+          margin-left: .5em;
+        }
+      }
+    }
+  }
+
+  > .el-table{
+    margin-top: 1em;
+  }
+
+  > .el-pagination{
+    padding: 0;
+    margin-top: 1em;
+    text-align: right;
+  }
+}
+
+.column-type-number{
+  text-align: right;
+}
+
+.column-type-datetime .cell{
+  display: flex;
+  flex-direction: column;
+}
+
+.column-type-operations .cell{
+  vertical-align: baseline;
+
+  & > * + * {
+    margin-left: 10px;
+  }
+
+  a, .component-sort-dropdown > .el-dropdown-link{
+    color: @blue;
+
+    &:hover{
+      color: @light-blue;
+    }
+  }
+}
