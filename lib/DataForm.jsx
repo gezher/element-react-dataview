@@ -100,6 +100,35 @@ class DataForm extends React.Component {
     return state || props.model;
   }
 
+  static setValidation(instance, errors) {
+    const errorKeys = Object.keys(errors);
+    errorKeys.forEach((name, index) => {
+      const field = instance.form.state.fields.find(f => f.props.prop === name);
+      if (field) {
+        field.setState({
+          error: errors[name],
+          validating: false,
+          valid: true
+        }, () => {
+          if (index === errorKeys.length - 1) {
+            DataForm.focusErrorField(instance, errors);
+          }
+        });
+      }
+    });
+  }
+
+  static focusErrorField(instance, errors) {
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length) {
+      const component = instance.form.state.fields.find(field => field.props.prop === errorKeys[0]);
+      // eslint-disable-next-line
+      findDOMNode(component).scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  }
+
   onFieldChange(key, value) {
     const field = this.props.fields.find(f => f.prop === key);
     const state = setByNamespace(
@@ -132,7 +161,7 @@ class DataForm extends React.Component {
           if (index === fields.length - 1) {
             const errorKeys = Object.keys(errors);
             if (errorKeys.length) {
-              this.focusErrorField(errors);
+              this.constructor.focusErrorField(this, errors);
             } else if (typeof onSubmit === 'function') {
               onSubmit(this.getFormData());
             }
@@ -165,35 +194,6 @@ class DataForm extends React.Component {
     });
 
     return data;
-  }
-
-  setValidation(errors) {
-    const errorKeys = Object.keys(errors);
-    errorKeys.forEach((name, index) => {
-      const field = this.form.state.fields.find(f => f.props.prop === name);
-      if (field) {
-        field.setState({
-          error: errors[name],
-          validating: false,
-          valid: true
-        }, () => {
-          if (index === errorKeys.length - 1) {
-            this.focusErrorField(errors);
-          }
-        });
-      }
-    });
-  }
-
-  focusErrorField(errors) {
-    const errorKeys = Object.keys(errors);
-    if (errorKeys.length) {
-      const component = this.form.state.fields.find(field => field.props.prop === errorKeys[0]);
-      // eslint-disable-next-line
-      findDOMNode(component).scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
   }
 
   createChangeHandler(key, fieldOnChange) {
@@ -282,7 +282,7 @@ class DataForm extends React.Component {
                   value={item[selectValueKey]}
                   label={item[selectTextKey]}
                   disabled={item.disabled}
-                >{optionRender ? optionRender(item, selected) : null}</Select.Option>
+                >{optionRender ? optionRender.call(this, item, selected) : null}</Select.Option>
               ))}
             </Select>
           );
