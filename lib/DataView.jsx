@@ -41,8 +41,14 @@ class DataView extends React.Component {
       null
   ));
 
-  static AddButton = observer(({ type = 'primary', creatable, onCreate, children = '添加' }) => (
-    creatable ? <Button type={type} onClick={onCreate}>{children}</Button> : null
+  static AddButton = observer(({
+    type = 'primary',
+    creatable,
+    onCreate,
+    addButtonText = '添加',
+    children
+  }) => (
+    creatable ? <Button type={type} onClick={onCreate}>{addButtonText || children}</Button> : null
   ));
 
   static SortSwitch = observer(({ state, store, sortable, onSortStart, children = '人工排序' }) => {
@@ -98,14 +104,15 @@ class DataView extends React.Component {
     row,
     buttonType = 'text',
     buttonSize,
-    children = '编辑'
+    modifyButtonText = '编辑',
+    children
   }) => (
     modifiable ?
       <Button
         type={buttonType}
         size={buttonSize}
         onClick={() => onModify(row)}
-      >{children}</Button> :
+      >{modifyButtonText || children}</Button> :
       null
   ));
 
@@ -115,14 +122,15 @@ class DataView extends React.Component {
     row,
     buttonType = 'text',
     buttonSize,
-    children = '删除'
+    deleteButtonText = '删除',
+    children
   }) => (
     deletable ?
       <Button
         type={buttonType}
         size={buttonSize}
         onClick={() => onDelete(row)}
-      >{children}</Button> :
+      >{children || deleteButtonText}</Button> :
       null
   ));
 
@@ -178,7 +186,7 @@ class DataView extends React.Component {
           ...(modifiable || deletable || sortable ?
             [{
               label: '操作',
-              width: 280,
+              width: 180,
               className: 'column-type-operations',
               render: (row) => {
                 const OperationColumn = (context || {}).tableOperationColumn ||
@@ -221,11 +229,13 @@ class DataView extends React.Component {
     dialogClass,
     store,
     onSubmit,
-    onCancel
+    onCancel,
+    addButtonText = '添加',
+    modifyButtonText = '编辑'
   }) => (
     <FormDialog
       ref={formRef}
-      title={`${state.form && state.form.id ? '编辑' : '添加'}${title}`}
+      title={`${state.form && state.form.id ? modifyButtonText : addButtonText}${title}`}
       size={size}
       customClass={dialogClass}
       fields={store.formFields}
@@ -262,8 +272,8 @@ class DataView extends React.Component {
   };
 
   onDelete = (row) => {
-    const { store, title, onError } = this.props;
-    MessageBox.confirm(`删除${title}不可恢复，是否继续？`, '提示', {
+    const { store, title, onError, deleteButtonText = '删除' } = this.props;
+    MessageBox.confirm(`${deleteButtonText}${title}不可恢复，是否继续？`, '提示', {
       type: 'warning'
     })
       .then(() => store.remove(row.id))
@@ -306,7 +316,7 @@ class DataView extends React.Component {
             errors[key] = data.body[key].map(err => err.replace(/^".+" /, '')).join('；');
           });
           if (this.form) {
-            this.form.setValidation(errors);
+            DataForm.setValidation(this.form, errors);
           }
           break;
 
