@@ -248,9 +248,12 @@ class DataForm extends React.Component {
     const selectableData = computeValue(dataSource, rowdata, field);
     const { selectValueKey = 'id', selectTextKey = 'name', optionRender } = options;
     const multiple = computeValue(options.multiple, rowdata, field);
+    let valueArray = [];
+    if (typeof value !== 'undefined') {
+      valueArray = Array.isArray(value) ? value : [value];
+    }
     const selected = multiple || Editor === 'checkbox' ?
-      (value || [])
-        .map(item => getPropertyOrValue(item, selectValueKey))
+      valueArray.map(item => getPropertyOrValue(item, selectValueKey))
         .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined') :
       getPropertyOrValue(value, selectValueKey);
 
@@ -321,7 +324,7 @@ class DataForm extends React.Component {
                 <Checkbox
                   key={item[selectValueKey]}
                   value={item[selectValueKey]}
-                  checked={(value || []).indexOf(item[selectValueKey]) !== -1}
+                  checked={valueArray.indexOf(item[selectValueKey]) !== -1}
                   disabled={item.disabled}
                 >{item[selectTextKey]}</Checkbox>
               ))}
