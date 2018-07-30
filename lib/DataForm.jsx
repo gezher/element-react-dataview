@@ -14,6 +14,13 @@ import {
 
 
 
+// hack into Form.Item to get value by namespace
+Form.Item.prototype.fieldValue = function fieldValue() {
+  const model = this.parent().props.model;
+  if (!model || !this.props.prop) return undefined;
+  return getByNamespace(model, this.props.prop);
+};
+
 @observer
 class DataForm extends React.Component {
   static nativeMap = {
@@ -152,13 +159,15 @@ class DataForm extends React.Component {
     const errors = {};
 
     if (fields.length) {
-      fields.forEach((field, index) => {
+      let count = 0;
+      fields.forEach((field) => {
         field.validate('', (error) => {
+          count += 1;
           if (error) {
             errors[field.props.prop] = error;
           }
 
-          if (index === fields.length - 1) {
+          if (count === fields.length) {
             const errorKeys = Object.keys(errors);
             if (errorKeys.length) {
               this.constructor.focusErrorField(this, errors);
