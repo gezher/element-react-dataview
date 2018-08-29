@@ -153,6 +153,7 @@ class DataForm extends React.Component {
 
   onSubmit = (ev) => {
     ev.preventDefault();
+    ev.stopPropagation();
     // hack into Form of element-react
     const { fields } = this.form.state;
     const { onSubmit } = this.props;
@@ -282,7 +283,7 @@ class DataForm extends React.Component {
 
         case 'number':
           return (
-            <InputNumber {...options} {...props} defaultValue={value} />
+            <InputNumber {...options} {...props} defaultValue={props.value} />
           );
 
         case 'select':
