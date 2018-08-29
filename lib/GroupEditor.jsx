@@ -35,22 +35,22 @@ class GroupEditor extends React.Component {
         ...Array(min - count).fill(null).map(() => ({}))
       ] : value;
 
-      setByNamespace(buffer[index], name, v);
+      const field = fields.find(f => f.prop === name);
+      const { valueTransformer } = field;
+      setByNamespace(buffer[index], name, valueTransformer && typeof valueTransformer.out === 'function' ?
+        valueTransformer.out(v, buffer[index]) :
+        v);
 
       const result = buffer.map((row) => {
         const data = Object.assign({}, row);
-        fields.forEach((field) => {
-          const { valueTransformer, prop } = field;
-          const columnValue = getByNamespace(row, prop);
-          setByNamespace(data, prop, valueTransformer && typeof valueTransformer.out === 'function' ?
-            valueTransformer.out(columnValue, row) :
-            columnValue);
+        fields.forEach((f) => {
+          const { prop } = f;
+          setByNamespace(data, prop, getByNamespace(row, prop));
         });
 
         return data;
       });
 
-      const field = fields.find(f => f.prop === name);
       if (!fieldOnChange || fieldOnChange.call(field, v, dataform, this) !== false) {
         onChange(result);
       }
