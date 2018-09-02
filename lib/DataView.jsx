@@ -373,6 +373,7 @@ class DataView extends React.Component {
   form = React.createRef();
 
   renderDefaultContent(context) {
+    const { children, component, ...props } = this.props;
     const events = pick(this, [
       'onPageChange',
       'onCreate',
@@ -384,10 +385,10 @@ class DataView extends React.Component {
       'onSortEnd'
     ]);
 
-    const props = {
+    const combinedProps = {
       context,
-      ...omit(this.props, ['children', 'component']),
       ...events,
+      ...props,
       state: this.state,
       formRef: this.form
     };
@@ -405,7 +406,7 @@ class DataView extends React.Component {
         ].map((key) => {
           const Component = (context || {})[key] ||
             this.constructor[this.constructor.blockMap[key]];
-          return Component ? <Component key={key} {...props} /> : null;
+          return Component ? <Component key={key} {...combinedProps} /> : null;
         })}
       </React.Fragment>
     );
