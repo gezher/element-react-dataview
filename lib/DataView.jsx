@@ -173,7 +173,7 @@ class DataView extends React.Component {
     </React.Fragment>
   ));
 
-  static Table = observer(({ key, ...props }) => {
+  static Table = observer((props) => {
     const { context, store, tableOptions, modifiable, deletable, sortable } = props;
 
     return (
