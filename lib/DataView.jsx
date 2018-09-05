@@ -3,7 +3,7 @@ import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Table, Pagination, Button, Message, MessageBox, Dropdown, Switch } from 'element-react';
 
-import { pick, omit } from './utils';
+import { pick } from './utils';
 import DataForm from './DataForm';
 import FormDialog from './FormDialog';
 
@@ -173,7 +173,7 @@ class DataView extends React.Component {
     </React.Fragment>
   ));
 
-  static Table = observer((props) => {
+  static Table = observer(({ key, ...props }) => {
     const { context, store, tableOptions, modifiable, deletable, sortable } = props;
 
     return (
@@ -192,7 +192,7 @@ class DataView extends React.Component {
                 const OperationColumn = (context || {}).tableOperationColumn ||
                   DataView.OperationColumn;
                 return (
-                  <OperationColumn {...omit(props, ['key'])} row={row} />
+                  <OperationColumn {...props} row={row} />
                 );
               }
             }] :
@@ -244,6 +244,22 @@ class DataView extends React.Component {
       onCancel={onCancel}
     />
   ));
+
+  static handleFormInvalidation(form, data) {
+    if (form) {
+      const errors = {};
+
+      Object.keys(data).forEach((key) => {
+        errors[key] = (Array.isArray(data[key]) ? data[key] : [data[key]])
+          .map(err =>
+            err.replace(/^"(.+)" /,
+              form.props.fields.find(item => item.prop === key).label || ''))
+          .join('；');
+      });
+
+      DataForm.setValidation(form, errors);
+    }
+  }
 
   state = {
     form: null,
@@ -309,15 +325,9 @@ class DataView extends React.Component {
       store.reload();
     }, (request) => {
       const { status, data } = request.response;
-      const errors = {};
       switch (status) {
         case 422:
-          Object.keys(data.body).forEach((key) => {
-            errors[key] = data.body[key].map(err => err.replace(/^".+" /, '')).join('；');
-          });
-          if (this.form) {
-            DataForm.setValidation(this.form, errors);
-          }
+          this.constructor.handleFormInvalidation(this.form, data.body);
           break;
 
         default:
