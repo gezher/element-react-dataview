@@ -87,13 +87,16 @@ class DataView extends React.Component {
     );
   });
 
-  static FilterPanel = observer(({ store }) => (
-    store.filterFields ?
+  static FilterPanel = observer(({ store, filterTrigger = 'submit' }) => (
+    store.filterFields && store.filterFields.length ?
       <DataForm
         submitText="搜索"
+        className="filter-panel"
         fields={store.filterFields}
         model={store.params}
-        onSubmit={query => store.getAll(query)}
+        onSubmit={filterTrigger === 'submit' ? query => store.getAll(query) : null}
+        onChange={filterTrigger === 'change' ? query => store.getAll(query) : null}
+        renderOperations={filterTrigger === 'submit' ? undefined : () => null}
       /> :
       null
   ));
@@ -200,7 +203,7 @@ class DataView extends React.Component {
           )
         ]}
         data={[...store.list]}
-        emptyText="还没有数据"
+        emptyText={store.loading ? '加载中' : '无数据'}
         border
         defaultSort={store.ordering.default && {
           prop: store.ordering.default.replace(/^-/, ''),
