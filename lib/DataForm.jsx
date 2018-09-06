@@ -428,12 +428,12 @@ class DataForm extends React.Component {
   }
 
   renderContent() {
-    const { fields, renderOperations } = this.props;
+    const { fields, renderOperations = this.renderOperations } = this.props;
 
     return (
       <React.Fragment>
         {this.renderFields(fields)}
-        {renderOperations ? renderOperations() : this.renderOperations()}
+        {renderOperations.call(this)}
       </React.Fragment>
     );
   }
