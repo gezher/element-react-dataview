@@ -45,17 +45,18 @@ export default class TagSelect extends React.Component {
     return (
       <ul className="component-tag-select">
         {selectableData.map((item) => {
+          const id = item[selectValueKey];
           const itemSelected = multiple ?
-            selected.includes(item[selectValueKey]) :
-            selected === item[selectValueKey];
+            selected.includes(id) :
+            selected === id;
 
           return (
-            <li key={item[selectValueKey]}>
+            <li key={typeof id !== 'undefined' ? id : ''}>
               <Button
                 type={itemSelected ? 'primary' : 'text'}
                 size={size}
                 disabled={disabled || item.disabled}
-                onClick={() => this.onChange(item[selectValueKey])}
+                onClick={() => this.onChange(id)}
               >{item[selectTextKey]}</Button>
             </li>
           );
