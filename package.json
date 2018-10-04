@@ -1,6 +1,6 @@
 {
   "name": "element-react-dataview",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "React data view components library, based on element-react.",
   "keywords": [
     "react",
@@ -45,5 +45,6 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0"
   },
-  "pre-commit": "lint"
+  "pre-commit": "lint",
+  "sideEffects": false
 }
