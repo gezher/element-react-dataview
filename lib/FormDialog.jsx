@@ -24,13 +24,16 @@ const FormDialog = React.forwardRef(({
   >
     <Dialog.Body>
       {children}
-      {model ?
-        <DataForm
-          ref={ref}
-          model={model}
-          onCancel={onCancel}
-          {...rest}
-        /> : null
+      {model
+        ? (
+          <DataForm
+            ref={ref}
+            model={model}
+            onCancel={onCancel}
+            {...rest}
+          />
+        )
+        : null
       }
     </Dialog.Body>
   </Dialog>

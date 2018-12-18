@@ -10,8 +10,13 @@ import './switchgroup.less';
 export default class SwitchGroup extends React.Component {
   createChangeHandler(id) {
     return (v) => {
-      const { value, onChange, rowdata } = this.props;
-      const multiple = computeValue(this.props.multiple, rowdata);
+      const {
+        value,
+        onChange,
+        rowdata,
+        multiple: multipleRaw
+      } = this.props;
+      const multiple = computeValue(multipleRaw, rowdata);
       if (multiple) {
         onChange(v ? value.concat([v]) : value.filter(vItem => vItem !== id));
       } else {
@@ -19,6 +24,7 @@ export default class SwitchGroup extends React.Component {
       }
     };
   }
+
   render() {
     const {
       value,
@@ -28,17 +34,18 @@ export default class SwitchGroup extends React.Component {
       onText,
       offText,
       dataSource,
-      rowdata
+      rowdata,
+      multiple: multipleRaw
     } = this.props;
 
-    const multiple = computeValue(this.props.multiple, rowdata);
+    const multiple = computeValue(multipleRaw, rowdata);
 
     const selectableData = computeValue(dataSource, rowdata);
-    const selected = multiple ?
-      value
+    const selected = multiple
+      ? value
         .map(item => getPropertyOrValue(item, selectValueKey))
-        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined') :
-      getPropertyOrValue(value, selectValueKey);
+        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
+      : getPropertyOrValue(value, selectValueKey);
 
     return (
       <ul className="component-switch-group">

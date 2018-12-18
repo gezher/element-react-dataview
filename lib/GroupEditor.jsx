@@ -10,25 +10,31 @@ import './groupeditor.less';
 
 class GroupEditor extends React.Component {
   onAdd = () => {
-    const { fields } = this.props;
+    const { fields, onChange } = this.props;
     const item = {};
     fields.forEach((field) => {
       setByNamespace(item, field.prop, typeof field.defaultValue !== 'undefined' ? field.defaultValue : null);
     });
     const { value = [] } = this.props;
     value.push(item);
-    this.props.onChange(value);
+    onChange(value);
   };
 
   onRemove(index) {
-    const { value } = this.props;
+    const { value, onChange } = this.props;
     value.splice(index, 1);
-    this.props.onChange(value);
+    onChange(value);
   }
 
   createChangeHandler(name, index, fieldOnChange) {
     return (v) => {
-      const { value = [], min, fields, dataform, onChange } = this.props;
+      const {
+        value = [],
+        min,
+        fields,
+        dataform,
+        onChange
+      } = this.props;
       const count = value.length;
       const buffer = count < min ? [
         ...value,
@@ -37,9 +43,9 @@ class GroupEditor extends React.Component {
 
       const field = fields.find(f => f.prop === name);
       const { valueTransformer } = field;
-      setByNamespace(buffer[index], name, valueTransformer && typeof valueTransformer.out === 'function' ?
-        valueTransformer.out(v, buffer[index]) :
-        v);
+      setByNamespace(buffer[index], name, valueTransformer && typeof valueTransformer.out === 'function'
+        ? valueTransformer.out(v, buffer[index])
+        : v);
 
       const result = buffer.map((row) => {
         const data = Object.assign({}, row);
@@ -75,9 +81,9 @@ class GroupEditor extends React.Component {
               rowdata: row
             };
             if (typeof placeholder !== 'undefined') {
-              options.placeholder = typeof placeholder === 'function' ?
-                placeholder.call(field, row, rowdata, index) :
-                placeholder;
+              options.placeholder = typeof placeholder === 'function'
+                ? placeholder.call(field, row, rowdata, index)
+                : placeholder;
             }
 
             if (editor.component) {
@@ -104,7 +110,12 @@ class GroupEditor extends React.Component {
   }
 
   renderAddButton() {
-    const { value = [], fields, creatable, max = Infinity } = this.props;
+    const {
+      value = [],
+      fields,
+      creatable,
+      max = Infinity
+    } = this.props;
 
     // 数量限制
     if (max >= 0 && value.length >= max) {
@@ -143,9 +154,9 @@ class GroupEditor extends React.Component {
         break;
     }
 
-    return willRender ?
-      <p><Button onClick={this.onAdd}>＋</Button></p> :
-      null;
+    return willRender
+      ? <p><Button onClick={this.onAdd}>＋</Button></p>
+      : null;
   }
 
   renderRemoveButton(row, index) {
@@ -171,15 +182,23 @@ class GroupEditor extends React.Component {
         break;
     }
 
-    return willRender ?
-      <td className="column-operation">
-        <Button onClick={() => this.onRemove(index)}>－</Button>
-      </td> :
-      null;
+    return willRender
+      ? (
+        <td className="column-operation">
+          <Button onClick={() => this.onRemove(index)}>－</Button>
+        </td>
+      )
+      : null;
   }
 
   render() {
-    const { value = [], fields, className, showLabel = true, min } = this.props;
+    const {
+      value = [],
+      fields,
+      className,
+      showLabel = true,
+      min
+    } = this.props;
     const count = value.length;
     const buffer = count < min ? [
       ...value,
@@ -188,29 +207,33 @@ class GroupEditor extends React.Component {
 
     return (
       <fieldset className={['component-group-fields', ...((className || '').toString().split(/[, ]/))].join(' ')}>
-        {buffer.length ?
-          <table>
-            {showLabel ?
-              <thead>
-                <tr>
-                  {fields.map((field) => {
-                    const fieldKey = typeof field.getKey === 'function' ?
-                      field.getKey('header') :
-                      `header_${field.prop}`;
+        {buffer.length
+          ? (
+            <table>
+              {showLabel
+                ? (
+                  <thead>
+                    <tr>
+                      {fields.map((field) => {
+                        const fieldKey = typeof field.getKey === 'function'
+                          ? field.getKey('header')
+                          : `header_${field.prop}`;
 
-                    return (
-                      <th key={fieldKey} className={`column-${field.prop.replace(/\./g, '-')}`}>{field.label}</th>
-                    );
-                  })}
-                </tr>
-              </thead> :
-              null
-            }
-            <tbody>
-              {buffer.map((row, index) => this.renderFieldsRow(row, index))}
-            </tbody>
-          </table> :
-          null
+                        return (
+                          <th key={fieldKey} className={`column-${field.prop.replace(/\./g, '-')}`}>{field.label}</th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                )
+                : null
+              }
+              <tbody>
+                {buffer.map((row, index) => this.renderFieldsRow(row, index))}
+              </tbody>
+            </table>
+          )
+          : null
         }
         {this.renderAddButton()}
       </fieldset>

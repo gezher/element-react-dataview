@@ -18,6 +18,7 @@ export default class SearchInput extends Input {
   };
 
   handleFocus = super.handleFocus.bind(this);
+
   handleBlur = super.handleBlur.bind(this);
 
   handleKeyDown = (ev) => {

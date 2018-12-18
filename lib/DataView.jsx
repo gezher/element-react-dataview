@@ -1,7 +1,15 @@
 import React from 'react';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { Table, Pagination, Button, Message, MessageBox, Dropdown, Switch } from 'element-react';
+import {
+  Table,
+  Pagination,
+  Button,
+  Message,
+  MessageBox,
+  Dropdown,
+  Switch
+} from 'element-react';
 
 import { pick } from './utils';
 import DataForm from './DataForm';
@@ -36,9 +44,7 @@ class DataView extends React.Component {
   ));
 
   static Description = observer(({ description }) => (
-    description ?
-      <p className="description">{description}</p> :
-      null
+    description ? <p className="description">{description}</p> : null
   ));
 
   static AddButton = observer(({
@@ -51,7 +57,13 @@ class DataView extends React.Component {
     creatable ? <Button type={type} onClick={onCreate}>{addButtonText || children}</Button> : null
   ));
 
-  static SortSwitch = observer(({ state, store, sortable, onSortStart, children = '人工排序' }) => {
+  static SortSwitch = observer(({
+    state,
+    store,
+    sortable,
+    onSortStart,
+    children = '人工排序'
+  }) => {
     if (!sortable) {
       return null;
     }
@@ -74,8 +86,8 @@ class DataView extends React.Component {
   });
 
   static OperationBar = observer((props) => {
-    const AddButton = (props.context || {}).addButton ||
-      DataView.AddButton;
+    const AddButton = (props.context || {}).addButton
+      || DataView.AddButton;
 
     return (
       <div className="operation-bar">
@@ -88,17 +100,19 @@ class DataView extends React.Component {
   });
 
   static FilterPanel = observer(({ store, filterTrigger = 'submit' }) => (
-    store.filterFields && store.filterFields.length ?
-      <DataForm
-        submitText="搜索"
-        className="filter-panel"
-        fields={store.filterFields}
-        model={store.params}
-        onSubmit={filterTrigger === 'submit' ? query => store.getAll(query) : null}
-        onChange={filterTrigger === 'change' ? query => store.getAll(query) : null}
-        renderOperations={filterTrigger === 'submit' ? undefined : () => null}
-      /> :
-      null
+    store.filterFields && store.filterFields.length
+      ? (
+        <DataForm
+          submitText="搜索"
+          className="filter-panel"
+          fields={store.filterFields}
+          model={store.params}
+          onSubmit={filterTrigger === 'submit' ? query => store.getAll(query) : null}
+          onChange={filterTrigger === 'change' ? query => store.getAll(query) : null}
+          renderOperations={filterTrigger === 'submit' ? undefined : () => null}
+        />
+      )
+      : null
   ));
 
   static ModifyButton = observer(({
@@ -110,13 +124,17 @@ class DataView extends React.Component {
     modifyButtonText = '编辑',
     children
   }) => (
-    modifiable ?
-      <Button
-        type={buttonType}
-        size={buttonSize}
-        onClick={() => onModify(row)}
-      >{modifyButtonText || children}</Button> :
-      null
+    modifiable
+      ? (
+        <Button
+          type={buttonType}
+          size={buttonSize}
+          onClick={() => onModify(row)}
+        >
+          {modifyButtonText || children}
+        </Button>
+      )
+      : null
   ));
 
   static DeleteButton = observer(({
@@ -128,18 +146,33 @@ class DataView extends React.Component {
     deleteButtonText = '删除',
     children
   }) => (
-    deletable ?
-      <Button
-        type={buttonType}
-        size={buttonSize}
-        onClick={() => onDelete(row)}
-      >{children || deleteButtonText}</Button> :
-      null
+    deletable
+      ? (
+        <Button
+          type={buttonType}
+          size={buttonSize}
+          onClick={() => onDelete(row)}
+        >
+          {children || deleteButtonText}
+        </Button>
+      )
+      : null
   ));
 
-  static SortDropdown = observer(({ state, store, sortable, onSortEnd, row }) => {
+  static SortDropdown = observer(({
+    state,
+    store,
+    sortable,
+    onSortEnd,
+    row
+  }) => {
     const { sortEnabled } = state;
-    const { pagination, ps, ordering, priorityKey } = store;
+    const {
+      pagination,
+      ps,
+      ordering,
+      priorityKey
+    } = store;
 
     return sortable && sortEnabled && ordering.current === `-${priorityKey}` ? (
       <Dropdown
@@ -177,7 +210,14 @@ class DataView extends React.Component {
   ));
 
   static Table = observer((props) => {
-    const { context, store, tableOptions, modifiable, deletable, sortable } = props;
+    const {
+      context,
+      store,
+      tableOptions,
+      modifiable,
+      deletable,
+      sortable
+    } = props;
 
     return (
       <Table
@@ -186,20 +226,20 @@ class DataView extends React.Component {
             type: 'selection'
           }] : []),
           ...store.columns,
-          ...(modifiable || deletable || sortable ?
-            [{
+          ...(modifiable || deletable || sortable
+            ? [{
               label: '操作',
               width: 180,
               className: 'column-type-operations',
               render: (row) => {
-                const OperationColumn = (context || {}).tableOperationColumn ||
-                  DataView.OperationColumn;
+                const OperationColumn = (context || {}).tableOperationColumn
+                  || DataView.OperationColumn;
                 return (
                   <OperationColumn {...props} row={row} />
                 );
               }
-            }] :
-            []
+            }]
+            : []
           )
         ]}
         data={[...store.list]}
@@ -215,13 +255,15 @@ class DataView extends React.Component {
   });
 
   static Pagination = observer(({ store, onPageChange }) => (
-    store.pagination && <Pagination
-      layout="total, prev, pager, next, jumper"
-      total={store.total}
-      pageSize={store.ps}
-      currentPage={store.page}
-      onCurrentChange={onPageChange}
-    />
+    store.pagination && (
+      <Pagination
+        layout="total, prev, pager, next, jumper"
+        total={store.total}
+        pageSize={store.ps}
+        currentPage={store.page}
+        onCurrentChange={onPageChange}
+      />
+    )
   ));
 
   static Form = observer(({
@@ -254,9 +296,8 @@ class DataView extends React.Component {
 
       Object.keys(data).forEach((key) => {
         errors[key] = (Array.isArray(data[key]) ? data[key] : [data[key]])
-          .map(err =>
-            err.replace(/^"(.+)" /,
-              form.props.fields.find(item => item.prop === key).label || ''))
+          .map(err => err.replace(/^"(.+)" /,
+            form.props.fields.find(item => item.prop === key).label || ''))
           .join('；');
       });
 
@@ -266,16 +307,20 @@ class DataView extends React.Component {
 
   state = {
     form: null,
+    // eslint-disable-next-line react/no-unused-state
     sortEnabled: false
   };
 
+  form = React.createRef();
+
   componentDidMount() {
-    const { defaultParams = {} } = this.props;
-    this.props.store.getAll(defaultParams);
+    const { defaultParams = {}, store } = this.props;
+    store.getAll(defaultParams);
   }
 
   onPageChange = (page) => {
-    this.props.store.getAll({ page });
+    const { store } = this.props;
+    store.getAll({ page });
   };
 
   onCreate = () => {
@@ -291,7 +336,13 @@ class DataView extends React.Component {
   };
 
   onDelete = (row) => {
-    const { store, title, onError, deleteButtonText = '删除' } = this.props;
+    const {
+      store,
+      title,
+      onError,
+      deleteButtonText
+      = '删除'
+    } = this.props;
     MessageBox.confirm(`${deleteButtonText}${title}不可恢复，是否继续？`, '提示', {
       type: 'warning'
     })
@@ -350,7 +401,8 @@ class DataView extends React.Component {
   };
 
   onSortStart = (value) => {
-    const { params, ordering, priorityKey } = this.props.store;
+    const { store } = this.props;
+    const { params, ordering, priorityKey } = store;
 
     const defaultPriorityOrder = `-${priorityKey}`;
 
@@ -359,31 +411,33 @@ class DataView extends React.Component {
         MessageBox.confirm('必须先恢复到人工排序顺序下才能继续，是否恢复？', '提示', {
           type: 'warning'
         })
-          .then(() => this.props.store.getAll(params, { order: defaultPriorityOrder }))
+          .then(() => store.getAll(params, { order: defaultPriorityOrder }))
+          // eslint-disable-next-line react/no-unused-state
           .then(() => this.setState({ sortEnabled: true }))
           .catch(() => {});
       } else {
+        // eslint-disable-next-line react/no-unused-state
         this.setState({ sortEnabled: true });
       }
     } else {
       if (ordering.current !== ordering.default) {
-        this.props.store.getAll(params, { order: ordering.default });
+        store.getAll(params, { order: ordering.default });
       }
+      // eslint-disable-next-line react/no-unused-state
       this.setState({ sortEnabled: false });
     }
   };
 
   onSortEnd = (row, change) => {
+    const { store } = this.props;
     const number = Number(change);
-    this.props.store.sort(row.id, isFinite(number) ? number : change).then(() => {
+    store.sort(row.id, Number.isFinite(number) ? number : change).then(() => {
       Message.success({ message: '操作成功！' });
-      this.props.store.reload();
+      store.reload();
     }, (error) => {
       Message.error({ message: error });
     });
   };
-
-  form = React.createRef();
 
   renderDefaultContent(context) {
     const { children, component, ...props } = this.props;
@@ -417,8 +471,8 @@ class DataView extends React.Component {
           'pagination',
           'form'
         ].map((key) => {
-          const Component = (context || {})[key] ||
-            this.constructor[this.constructor.blockMap[key]];
+          const Component = (context || {})[key]
+            || this.constructor[this.constructor.blockMap[key]];
           return Component ? <Component key={key} {...combinedProps} /> : null;
         })}
       </React.Fragment>
@@ -463,9 +517,9 @@ class DataView extends React.Component {
 
     return (
       <section className={['block-dataview', ...((className || '').toString().split(/[, ]/))].join(' ')}>
-        {typeof content === 'object' ?
-          this.renderDefaultContent(content) :
-          content
+        {typeof content === 'object'
+          ? this.renderDefaultContent(content)
+          : content
         }
       </section>
     );

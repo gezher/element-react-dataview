@@ -1,7 +1,17 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { observer } from 'mobx-react';
-import { Form, Button, Input, InputNumber, Select, Switch, Radio, Checkbox, Transfer } from 'element-react';
+import {
+  Form,
+  Button,
+  Input,
+  InputNumber,
+  Select,
+  Switch,
+  Radio,
+  Checkbox,
+  Transfer
+} from 'element-react';
 
 import {
   isPlainObject,
@@ -16,7 +26,7 @@ import {
 
 // hack into Form.Item to get value by namespace
 Form.Item.prototype.fieldValue = function fieldValue() {
-  const model = this.parent().props.model;
+  const { model } = this.parent().props;
   if (!model || !this.props.prop) return undefined;
   return getByNamespace(model, this.props.prop);
 };
@@ -49,16 +59,16 @@ class DataForm extends React.Component {
 
     const formValue = getByNamespace(model, name);
     const {
-      value = typeof formValue !== 'undefined' ?
-        formValue :
-        computeValue(options.defaultValue, model)
+      value = typeof formValue !== 'undefined'
+        ? formValue
+        : computeValue(options.defaultValue, model)
     } = options;
 
     const computedProps = {
       name,
-      value: typeof valueTransformer.in === 'function' ?
-        valueTransformer.in(value) :
-        value,
+      value: typeof valueTransformer.in === 'function'
+        ? valueTransformer.in(value)
+        : value,
       onChange: onChange || DataForm.createChangeHandler(dataform, name),
       placeholder: computeValue(placeholder, model),
       disabled: computeValue(disabled, model),
@@ -73,26 +83,33 @@ class DataForm extends React.Component {
     return <Editor {...computedProps} />;
   }
 
-  static FieldSet({ fields = [], model, dataform, labelWidth = 100 }) {
+  static FieldSet({
+    fields = [],
+    model,
+    dataform,
+    labelWidth = 100
+  }) {
     return fields
       .filter(field => computeValue(field.editable, model, field) !== false)
       .map((field, index) => {
         const { prop: name } = field;
-        const fieldKey = typeof field.getKey === 'function' ?
-          field.getKey(index) :
-          `${index}_${name}`;
+        const fieldKey = typeof field.getKey === 'function'
+          ? field.getKey(index)
+          : `${index}_${name}`;
 
         const component = <DataForm.Field {...{ ...field, model, dataform }} />;
 
-        return labelWidth ?
-          <Form.Item
-            label={field.label}
-            key={fieldKey}
-            prop={name}
-          >
-            {component}
-          </Form.Item> :
-          <React.Fragment key={fieldKey}>{component}</React.Fragment>;
+        return labelWidth
+          ? (
+            <Form.Item
+              label={field.label}
+              key={fieldKey}
+              prop={name}
+            >
+              {component}
+            </Form.Item>
+          )
+          : <React.Fragment key={fieldKey}>{component}</React.Fragment>;
       });
   }
 
@@ -137,17 +154,18 @@ class DataForm extends React.Component {
   }
 
   onFieldChange(key, value) {
-    const field = this.props.fields.find(f => f.prop === key);
+    const { fields, onChange } = this.props;
+    const field = fields.find(f => f.prop === key);
     const state = setByNamespace(
       this.state,
       key,
-      field.valueTransformer && field.valueTransformer.out ?
-        field.valueTransformer.out(value, this.state) :
-        value
+      field.valueTransformer && field.valueTransformer.out
+        ? field.valueTransformer.out(value, this.state)
+        : value
     );
     this.setState(state);
-    if (typeof this.props.onChange === 'function') {
-      this.props.onChange(this.getFormData(state));
+    if (typeof onChange === 'function') {
+      onChange(this.getFormData(state));
     }
   }
 
@@ -192,12 +210,12 @@ class DataForm extends React.Component {
 
   getFormData(state = this.state) {
     const data = {};
-
-    this.props.fields.forEach((field) => {
+    const { fields } = this.props;
+    fields.forEach((field) => {
       // 当表单域不可编辑或被禁用时，跳过
-      if (computeValue(field.disabled, state, field) ||
-        computeValue(field.editable, state, field) === false ||
-        field.ignoreValue) return;
+      if (computeValue(field.disabled, state, field)
+        || computeValue(field.editable, state, field) === false
+        || field.ignoreValue) return;
       const name = field.prop;
       const value = getByNamespace(state, name);
       setByNamespace(data, name, value);
@@ -208,9 +226,10 @@ class DataForm extends React.Component {
 
   createChangeHandler(key, fieldOnChange) {
     const form = this;
-    const field = this.props.fields.find(f => f.prop === key);
+    const { field } = this.props;
     return function onChange(value) {
-      if (!fieldOnChange || fieldOnChange.call(field, value, form) !== false) {
+      if (!fieldOnChange
+        || fieldOnChange.call(field.find(f => f.prop === key), value, form) !== false) {
         form.onFieldChange(key, value);
       }
     };
@@ -237,16 +256,16 @@ class DataForm extends React.Component {
 
     const formValue = getByNamespace(rowdata, name);
     const {
-      value = typeof formValue !== 'undefined' ?
-        formValue :
-        computeValue(field.defaultValue, rowdata, field)
+      value = typeof formValue !== 'undefined'
+        ? formValue
+        : computeValue(field.defaultValue, rowdata, field)
     } = options;
 
     const props = {
       name,
-      value: typeof valueTransformer.in === 'function' ?
-        valueTransformer.in(value) :
-        value,
+      value: typeof valueTransformer.in === 'function'
+        ? valueTransformer.in(value)
+        : value,
       onChange,
       placeholder: computeValue(placeholder, rowdata, field),
       disabled: computeValue(disabled, rowdata, field),
@@ -262,10 +281,10 @@ class DataForm extends React.Component {
     if (typeof value !== 'undefined') {
       valueArray = Array.isArray(value) ? value : [value];
     }
-    const selected = multiple || Editor === 'checkbox' ?
-      valueArray.map(item => getPropertyOrValue(item, selectValueKey))
-        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined') :
-      getPropertyOrValue(value, selectValueKey);
+    const selected = multiple || Editor === 'checkbox'
+      ? valueArray.map(item => getPropertyOrValue(item, selectValueKey))
+        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
+      : getPropertyOrValue(value, selectValueKey);
 
     const typeOfEditor = typeof Editor;
 
@@ -295,7 +314,9 @@ class DataForm extends React.Component {
                   value={item[selectValueKey]}
                   label={item[selectTextKey]}
                   disabled={item.disabled}
-                >{optionRender ? optionRender.call(this, item, selected) : null}</Select.Option>
+                >
+                  {optionRender ? optionRender.call(this, item, selected) : null}
+                </Select.Option>
               ))}
             </Select>
           );
@@ -317,7 +338,9 @@ class DataForm extends React.Component {
                   key={item[selectValueKey]}
                   value={item[selectValueKey]}
                   disabled={item.disabled}
-                >{item[selectTextKey]}</Radio>
+                >
+                  {item[selectTextKey]}
+                </Radio>
               ))}
             </Radio.Group>
           );
@@ -336,7 +359,9 @@ class DataForm extends React.Component {
                   value={item[selectValueKey]}
                   checked={valueArray.indexOf(item[selectValueKey]) !== -1}
                   disabled={item.disabled}
-                >{item[selectTextKey]}</Checkbox>
+                >
+                  {item[selectTextKey]}
+                </Checkbox>
               ))}
             </Checkbox.Group>
           );
@@ -391,26 +416,25 @@ class DataForm extends React.Component {
   }
 
   renderFields(fields) {
-    const { labelWidth = 100 } = this.props;
     return fields
       .filter(field => computeValue(field.editable, this.state, field) !== false)
       .map((field, index) => {
         const { prop: name } = field;
-        const fieldKey = typeof field.getKey === 'function' ?
-          field.getKey(index) :
-          `${index}_${name}`;
+        const fieldKey = typeof field.getKey === 'function'
+          ? field.getKey(index)
+          : `${index}_${name}`;
 
         const renderedField = this.renderField(field, field.editor);
 
-        return labelWidth ?
+        return (
           <Form.Item
             label={field.label}
             key={fieldKey}
             prop={name}
           >
             {renderedField}
-          </Form.Item> :
-          <React.Fragment key={fieldKey}>{renderedField}</React.Fragment>;
+          </Form.Item>
+        );
       });
   }
 
@@ -420,9 +444,7 @@ class DataForm extends React.Component {
     return (
       <p className="operation">
         <Button type="primary" nativeType="submit">{submitText}</Button>
-        {onCancel &&
-          <Button onClick={this.onCancel}>取消</Button>
-        }
+        {onCancel && <Button onClick={this.onCancel}>取消</Button>}
       </p>
     );
   }
@@ -481,7 +503,9 @@ class DataForm extends React.Component {
         labelPosition={labelPosition}
         labelWidth={labelWidth}
         rules={rules}
-      >{content}</Form>
+      >
+        {content}
+      </Form>
     );
   }
 }

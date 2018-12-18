@@ -9,14 +9,18 @@ import './tagselect.less';
 
 export default class TagSelect extends React.Component {
   onChange = (v) => {
-    const { value, onChange, rowdata } = this.props;
-    const multiple = computeValue(this.props.multiple, rowdata);
+    const {
+      value,
+      onChange,
+      rowdata,
+      multiple: multipleRaw
+    } = this.props;
+    const multiple = computeValue(multipleRaw, rowdata);
     if (multiple) {
       // TODO: bug here when add button for <ALL> value
-      onChange(value.find(vItem => vItem === v) ?
-        value.concat([v]) :
-        value.filter(vItem => vItem !== v)
-      );
+      onChange(value.find(vItem => vItem === v)
+        ? value.concat([v])
+        : value.filter(vItem => vItem !== v));
     } else {
       onChange(v);
     }
@@ -30,25 +34,26 @@ export default class TagSelect extends React.Component {
       selectValueKey = 'id',
       selectTextKey = 'name',
       dataSource,
-      rowdata
+      rowdata,
+      multiple: multipleRaw
     } = this.props;
 
-    const multiple = computeValue(this.props.multiple, rowdata);
+    const multiple = computeValue(multipleRaw, rowdata);
 
     const selectableData = computeValue(dataSource, rowdata);
-    const selected = multiple ?
-      value
+    const selected = multiple
+      ? value
         .map(item => getPropertyOrValue(item, selectValueKey))
-        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined') :
-      getPropertyOrValue(value, selectValueKey);
+        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
+      : getPropertyOrValue(value, selectValueKey);
 
     return (
       <ul className="component-tag-select">
         {selectableData.map((item) => {
           const id = item[selectValueKey];
-          const itemSelected = multiple ?
-            selected.includes(id) :
-            selected === id;
+          const itemSelected = multiple
+            ? selected.includes(id)
+            : selected === id;
 
           return (
             <li key={typeof id !== 'undefined' ? id : ''}>
@@ -57,7 +62,9 @@ export default class TagSelect extends React.Component {
                 size={size}
                 disabled={disabled || item.disabled}
                 onClick={() => this.onChange(id)}
-              >{item[selectTextKey]}</Button>
+              >
+                {item[selectTextKey]}
+              </Button>
             </li>
           );
         })}
