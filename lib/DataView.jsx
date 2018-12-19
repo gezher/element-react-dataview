@@ -11,7 +11,7 @@ import {
   Switch
 } from 'element-react';
 
-import { pick } from './utils';
+import { pick, isArrayEqual } from './utils';
 import DataForm from './DataForm';
 import FormDialog from './FormDialog';
 
@@ -61,8 +61,7 @@ class DataView extends React.Component {
     state,
     store,
     sortable,
-    onSortStart,
-    children = '人工排序'
+    onSortStart
   }) => {
     if (!sortable) {
       return null;
@@ -72,14 +71,14 @@ class DataView extends React.Component {
 
     const { ordering, priorityKey } = store;
 
-    const defaultPriorityOrder = `-${priorityKey}`;
+    const defaultPriorityOrder = ordering.default || [`-${priorityKey}`];
 
     return (
       <span className="sort-switch">
-        {children}
+        手动排序
         <Switch
           onChange={onSortStart}
-          value={sortEnabled && ordering.current === defaultPriorityOrder}
+          value={sortEnabled && isArrayEqual(ordering.current, defaultPriorityOrder)}
         />
       </span>
     );
@@ -404,10 +403,10 @@ class DataView extends React.Component {
     const { store } = this.props;
     const { params, ordering, priorityKey } = store;
 
-    const defaultPriorityOrder = `-${priorityKey}`;
+    const defaultPriorityOrder = ordering.default || [`-${priorityKey}`];
 
     if (value) {
-      if (ordering.current !== defaultPriorityOrder) {
+      if (!isArrayEqual(ordering.current, defaultPriorityOrder)) {
         MessageBox.confirm('必须先恢复到人工排序顺序下才能继续，是否恢复？', '提示', {
           type: 'warning'
         })
