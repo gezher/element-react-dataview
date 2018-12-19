@@ -290,20 +290,19 @@ class DataView extends React.Component {
     />
   ));
 
-  static handleFormInvalidation(formRef, data) {
-    if (formRef && formRef.current) {
-      const { form } = formRef.current;
-      const errors = {};
+  static handleFormInvalidation({ current: form }, data) {
+    const errors = {};
 
-      Object.keys(data).forEach((key) => {
-        errors[key] = (Array.isArray(data[key]) ? data[key] : [data[key]])
-          .map(err => err.replace(/^"(.+)" /,
-            form.props.fields.find(item => item.prop === key).label || ''))
-          .join('；');
-      });
+    Object.keys(data).forEach((key) => {
+      errors[key] = (Array.isArray(data[key]) ? data[key] : [data[key]])
+        .map((err) => {
+          const field = form.props.fields.find(item => item.prop === key);
+          return err.replace(/^"(.+)" /, (field && field.label) || '');
+        })
+        .join('；');
+    });
 
-      DataForm.setValidation(form, errors);
-    }
+    DataForm.setValidation(form, errors);
   }
 
   state = {
