@@ -166,27 +166,33 @@ class DataView extends React.Component {
     row
   }) => {
     const { sortEnabled } = state;
-    const {
-      pagination,
-      ps,
-      ordering
-    } = store;
+    const { priorityKey, ordering } = store;
 
-    return sortable && sortEnabled && isArrayEqual(ordering.current, ordering.default) ? (
+    if (!sortable
+      || !sortEnabled
+      || !ordering.current
+      || !ordering.default
+      || !isArrayEqual(ordering.current, ordering.default)) {
+      return null;
+    }
+
+    const orderDirections = [-1, 1];
+    const priorityOrder = ordering.current.filter(item => item.includes(priorityKey));
+    if (priorityOrder.length) {
+      if (priorityOrder[0][0] === '-') {
+        orderDirections.reverse();
+      }
+    }
+
+    return (
       <Dropdown
         className="component-sort-dropdown"
         onCommand={change => onSortEnd(row, change)}
         menu={(
           <Dropdown.Menu>
             <Dropdown.Item command="Infinity">置顶</Dropdown.Item>
-            {pagination ? (
-              <Dropdown.Item command={`${ps}`}>上移一页</Dropdown.Item>
-            ) : null}
-            <Dropdown.Item command="1">上移</Dropdown.Item>
-            <Dropdown.Item command="-1" divided>下移</Dropdown.Item>
-            {pagination ? (
-              <Dropdown.Item command={`${-ps}`}>下移一页</Dropdown.Item>
-            ) : null}
+            <Dropdown.Item command={orderDirections[0]}>上移</Dropdown.Item>
+            <Dropdown.Item command={orderDirections[1]} divided>下移</Dropdown.Item>
             <Dropdown.Item command="-Infinity">沉底</Dropdown.Item>
           </Dropdown.Menu>
         )}
@@ -196,7 +202,7 @@ class DataView extends React.Component {
           <i className="el-icon-caret-bottom el-icon--right" />
         </span>
       </Dropdown>
-    ) : null;
+    );
   });
 
   static OperationColumn = observer(props => (
