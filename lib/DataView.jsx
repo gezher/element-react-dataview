@@ -169,11 +169,10 @@ class DataView extends React.Component {
     const {
       pagination,
       ps,
-      ordering,
-      priorityKey
+      ordering
     } = store;
 
-    return sortable && sortEnabled && ordering.current === `-${priorityKey}` ? (
+    return sortable && sortEnabled && isArrayEqual(ordering.current, ordering.default) ? (
       <Dropdown
         className="component-sort-dropdown"
         onCommand={change => onSortEnd(row, change)}
@@ -218,6 +217,8 @@ class DataView extends React.Component {
       sortable
     } = props;
 
+    const { default: defaultOrdering } = store.ordering;
+
     return (
       <Table
         columns={[
@@ -244,9 +245,9 @@ class DataView extends React.Component {
         data={[...store.list]}
         emptyText={store.loading ? '加载中' : '无数据'}
         border
-        defaultSort={store.ordering.default && {
-          prop: store.ordering.default.replace(/^-/, ''),
-          order: store.ordering.default[0] === '-' ? 'descending' : 'ascending'
+        defaultSort={defaultOrdering && defaultOrdering.length && {
+          prop: defaultOrdering[0].replace(/^-/, ''),
+          order: defaultOrdering[0][0] === '-' ? 'descending' : 'ascending'
         }}
         {...tableOptions}
       />
@@ -419,7 +420,7 @@ class DataView extends React.Component {
         this.setState({ sortEnabled: true });
       }
     } else {
-      if (ordering.current !== ordering.default) {
+      if (!isArrayEqual(ordering.current, defaultPriorityOrder)) {
         store.getAll(params, { order: ordering.default });
       }
       // eslint-disable-next-line react/no-unused-state
