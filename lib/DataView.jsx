@@ -290,8 +290,9 @@ class DataView extends React.Component {
     />
   ));
 
-  static handleFormInvalidation(form, data) {
-    if (form) {
+  static handleFormInvalidation(formRef, data) {
+    if (formRef && formRef.current) {
+      const { form } = formRef.current;
       const errors = {};
 
       Object.keys(data).forEach((key) => {
