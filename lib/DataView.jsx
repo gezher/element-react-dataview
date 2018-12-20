@@ -176,7 +176,7 @@ class DataView extends React.Component {
       return null;
     }
 
-    const orderDirections = [-1, 1];
+    const orderDirections = ['-1', '1'];
     const priorityOrder = ordering.current.filter(item => item.includes(priorityKey));
     if (priorityOrder.length) {
       if (priorityOrder[0][0] === '-') {
