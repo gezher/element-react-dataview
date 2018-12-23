@@ -109,22 +109,21 @@ class GroupEditor extends React.Component {
     );
   }
 
-  renderAddButton() {
+  renderAddButton(buffer) {
     const {
-      value = [],
       fields,
       creatable,
       max = Infinity
     } = this.props;
 
     // 数量限制
-    if (max >= 0 && value.length >= max) {
+    if (max >= 0 && buffer.length >= max) {
       return null;
     }
 
     // 末行不为空
-    if (value.length) {
-      const lastRow = value[value.length - 1];
+    if (buffer.length) {
+      const lastRow = buffer[buffer.length - 1];
       const lastEmpty = fields
         .filter(field => computeValue(field.editable, lastRow, field) !== false)
         .every((field) => {
@@ -147,7 +146,7 @@ class GroupEditor extends React.Component {
         break;
 
       case 'function':
-        willRender = creatable(value);
+        willRender = creatable(buffer);
         break;
 
       default:
@@ -235,7 +234,7 @@ class GroupEditor extends React.Component {
           )
           : null
         }
-        {this.renderAddButton()}
+        {this.renderAddButton(buffer)}
       </fieldset>
     );
   }
