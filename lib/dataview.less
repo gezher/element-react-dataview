@@ -84,15 +84,21 @@
 .column-type-operations .cell{
   vertical-align: baseline;
 
-  & > * + * {
-    margin-left: 10px;
+  & > *:not(:last-child) {
+    margin-right: 10px;
   }
 
-  a, .component-sort-dropdown > .el-dropdown-link{
-    color: @blue;
-
-    &:hover{
-      color: @light-blue;
+  a, .el-dropdown{
+    > .el-dropdown-link{
+      color: @blue;
+  
+      &:hover{
+        color: @light-blue;
+      }
+    }
+    .el-dropdown-menu__item a{
+      display: flex;
+      color: @extra-light-black;
     }
   }
 }
