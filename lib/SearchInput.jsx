@@ -44,6 +44,7 @@ export default class SearchInput extends Input {
       rows,
       onMouseEnter,
       onMouseLeave,
+      trim,
       ...otherProps
     } = this.props;
 
