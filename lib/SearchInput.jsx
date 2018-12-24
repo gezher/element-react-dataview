@@ -8,13 +8,17 @@ export default class SearchInput extends Input {
     super(props);
 
     this.state = {
+      changed: false,
       value: typeof props.value !== 'undefined' ? props.value : props.defaultValue || '',
       textareaStyle: { resize: props.resize }
     };
   }
 
   handleChange = (ev) => {
-    this.setState({ value: ev.target.value });
+    this.setState({
+      changed: true,
+      value: ev.target.value || undefined
+    });
   };
 
   handleFocus = super.handleFocus.bind(this);
@@ -23,11 +27,17 @@ export default class SearchInput extends Input {
 
   handleKeyDown = (ev) => {
     const { onChange } = this.props;
+    const { changed } = this.state;
+    const { value } = ev.target;
 
     if (ev.keyCode === 13) {
       ev.preventDefault();
+      if (!value && !changed) {
+        return;
+      }
+      this.setState({ changed: false });
       if (onChange) {
-        onChange(ev.target.value);
+        onChange(value || undefined);
       }
     }
   };
