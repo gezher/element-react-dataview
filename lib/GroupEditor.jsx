@@ -13,7 +13,7 @@ class GroupEditor extends React.Component {
     const { fields, onChange } = this.props;
     const item = {};
     fields.forEach((field) => {
-      setByNamespace(item, field.prop, typeof field.defaultValue !== 'undefined' ? field.defaultValue : null);
+      setByNamespace(item, field.prop, field.defaultValue);
     });
     const { value = [] } = this.props;
     value.push(item);
