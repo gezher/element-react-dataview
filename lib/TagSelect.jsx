@@ -21,7 +21,7 @@ export default class TagSelect extends React.Component {
       onChange(value.find(vItem => vItem === v)
         ? value.concat([v])
         : value.filter(vItem => vItem !== v));
-    } else {
+    } else if (v !== value) {
       onChange(v);
     }
   };
