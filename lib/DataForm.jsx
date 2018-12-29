@@ -67,7 +67,7 @@ class DataForm extends React.Component {
     const computedProps = {
       name,
       value: typeof valueTransformer.in === 'function'
-        ? valueTransformer.in(value)
+        ? valueTransformer.in(value, model)
         : value,
       onChange: onChange || DataForm.createChangeHandler(dataform, name),
       placeholder: computeValue(placeholder, model),
@@ -146,23 +146,29 @@ class DataForm extends React.Component {
     const errorKeys = Object.keys(errors);
     if (errorKeys.length) {
       const component = instance.form.state.fields.find(field => field.props.prop === errorKeys[0]);
-      // eslint-disable-next-line
-      findDOMNode(component).scrollIntoView({
-        behavior: 'smooth'
-      });
+      if (component) {
+        // eslint-disable-next-line
+        findDOMNode(component).scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
     }
   }
 
-  onFieldChange(key, value) {
+  onFieldChange(data) {
     const { fields, onChange } = this.props;
-    const field = fields.find(f => f.prop === key);
-    const state = setByNamespace(
-      this.state,
-      key,
-      field.valueTransformer && field.valueTransformer.out
-        ? field.valueTransformer.out(value, this.state)
-        : value
-    );
+    const state = {};
+    Object.keys(data).forEach((key) => {
+      const value = data[key];
+      const field = fields.find(f => f.prop === key);
+      Object.assign(state, setByNamespace(
+        this.state,
+        key,
+        field.valueTransformer && field.valueTransformer.out
+          ? field.valueTransformer.out(value, this.state)
+          : value
+      ));
+    });
     this.setState(state);
     if (typeof onChange === 'function') {
       onChange(this.getFormData(state));
@@ -226,11 +232,11 @@ class DataForm extends React.Component {
 
   createChangeHandler(key, fieldOnChange) {
     const form = this;
-    const { field } = this.props;
+    const { fields } = this.props;
     return function onChange(value) {
       if (!fieldOnChange
-        || fieldOnChange.call(field.find(f => f.prop === key), value, form) !== false) {
-        form.onFieldChange(key, value);
+        || fieldOnChange.call(fields.find(f => f.prop === key), value, form) !== false) {
+        form.onFieldChange({ [key]: value });
       }
     };
   }
@@ -264,7 +270,7 @@ class DataForm extends React.Component {
     const props = {
       name,
       value: typeof valueTransformer.in === 'function'
-        ? valueTransformer.in(value)
+        ? valueTransformer.in(value, rowdata)
         : value,
       onChange,
       placeholder: computeValue(placeholder, rowdata, field),
