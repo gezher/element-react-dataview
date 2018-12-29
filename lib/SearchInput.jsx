@@ -96,7 +96,7 @@ export default class SearchInput extends Input {
           {...otherProps}
           ref={(ref) => { this.input = ref; }}
           type={type}
-          value={this.state.value}
+          value={this.state.value || ''}
           className="el-input__inner"
           autoComplete={autoComplete}
           onChange={this.handleChange}
