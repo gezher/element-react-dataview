@@ -35,13 +35,20 @@ class GroupEditor extends React.Component {
         dataform,
         onChange
       } = this.props;
+
+      const field = fields.find(f => f.prop === name);
+
+      if (fieldOnChange && fieldOnChange.call(field, v, dataform, this) === false) {
+        return;
+      }
+
       const count = value.length;
       const buffer = count < min ? [
         ...value,
+        // here fill null then map because only fill new object will be only one reference
         ...Array(min - count).fill(null).map(() => ({}))
       ] : value;
 
-      const field = fields.find(f => f.prop === name);
       const { valueTransformer } = field;
       setByNamespace(buffer[index], name, valueTransformer && typeof valueTransformer.out === 'function'
         ? valueTransformer.out(v, buffer[index])
@@ -57,9 +64,7 @@ class GroupEditor extends React.Component {
         return data;
       });
 
-      if (!fieldOnChange || fieldOnChange.call(field, v, dataform, this) !== false) {
-        onChange(result);
-      }
+      onChange(result);
     };
   }
 
