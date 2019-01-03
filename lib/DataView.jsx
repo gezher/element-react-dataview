@@ -11,13 +11,25 @@ import {
   Switch
 } from 'element-react';
 
-import { pick, isArrayEqual } from './utils';
+import { pick } from './utils';
 import DataForm from './DataForm';
 import FormDialog from './FormDialog';
 
 import './dataview.less';
 
 
+
+function isOrderEqual(a, b) {
+  if (!a && !b) {
+    return true;
+  }
+
+  if ((!a && b) || (a && !b)) {
+    return false;
+  }
+
+  return a.toString().split().sort().join() === b.toString().split().sort().join();
+}
 
 @observer
 class DataView extends React.Component {
@@ -78,7 +90,7 @@ class DataView extends React.Component {
         手动排序
         <Switch
           onChange={onSortStart}
-          value={sortEnabled && isArrayEqual(ordering.current, defaultPriorityOrder)}
+          value={sortEnabled && isOrderEqual(ordering.current, defaultPriorityOrder)}
         />
       </span>
     );
@@ -172,7 +184,7 @@ class DataView extends React.Component {
       || !sortEnabled
       || !ordering.current
       || !ordering.default
-      || !isArrayEqual(ordering.current, ordering.default)) {
+      || !isOrderEqual(ordering.current, ordering.default)) {
       return null;
     }
 
@@ -410,10 +422,10 @@ class DataView extends React.Component {
     const { store } = this.props;
     const { params, ordering, priorityKey } = store;
 
-    const defaultPriorityOrder = ordering.default || [`-${priorityKey}`];
+    const defaultPriorityOrder = ordering.default || [priorityKey];
 
     if (value) {
-      if (!isArrayEqual(ordering.current, defaultPriorityOrder)) {
+      if (!isOrderEqual(ordering.current, defaultPriorityOrder)) {
         MessageBox.confirm('必须先恢复到人工排序顺序下才能继续，是否恢复？', '提示', {
           type: 'warning'
         })
@@ -426,7 +438,7 @@ class DataView extends React.Component {
         this.setState({ sortEnabled: true });
       }
     } else {
-      if (!isArrayEqual(ordering.current, defaultPriorityOrder)) {
+      if (!isOrderEqual(ordering.current, defaultPriorityOrder)) {
         store.getAll(params, { order: ordering.default });
       }
       // eslint-disable-next-line react/no-unused-state
