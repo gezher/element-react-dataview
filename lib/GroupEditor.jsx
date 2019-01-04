@@ -38,7 +38,7 @@ class GroupEditor extends React.Component {
 
       const field = fields.find(f => f.prop === name);
 
-      if (fieldOnChange && fieldOnChange.call(field, v, dataform, this) === false) {
+      if (fieldOnChange && fieldOnChange.call(field, v, dataform, this, index) === false) {
         return;
       }
 
