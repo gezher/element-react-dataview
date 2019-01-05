@@ -188,10 +188,10 @@ class DataView extends React.Component {
       return null;
     }
 
-    const orderDirections = ['-1', '1'];
-    const priorityOrder = ordering.current.filter(item => item.includes(priorityKey));
-    if (priorityOrder.length) {
-      if (priorityOrder[0][0] === '-') {
+    const orderDirections = ['-', ''];
+    const priorityOrder = ordering.current.find(item => item.includes(priorityKey));
+    if (priorityOrder) {
+      if (priorityOrder[0] === '-') {
         orderDirections.reverse();
       }
     }
@@ -202,10 +202,10 @@ class DataView extends React.Component {
         onCommand={change => onSortEnd(row, change)}
         menu={(
           <Dropdown.Menu>
-            <Dropdown.Item command="Infinity">置顶</Dropdown.Item>
-            <Dropdown.Item command={orderDirections[0]}>上移</Dropdown.Item>
-            <Dropdown.Item command={orderDirections[1]} divided>下移</Dropdown.Item>
-            <Dropdown.Item command="-Infinity">沉底</Dropdown.Item>
+            <Dropdown.Item command={`${orderDirections[0]}Infinity`}>最前</Dropdown.Item>
+            <Dropdown.Item command={`${orderDirections[0]}1`}>上移</Dropdown.Item>
+            <Dropdown.Item command={`${orderDirections[1]}1`} divided>下移</Dropdown.Item>
+            <Dropdown.Item command={`${orderDirections[1]}Infinity`}>最后</Dropdown.Item>
           </Dropdown.Menu>
         )}
       >
