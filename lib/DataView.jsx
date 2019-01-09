@@ -338,7 +338,7 @@ class DataView extends React.Component {
 
   onPageChange = (page) => {
     const { store } = this.props;
-    store.getAll({ page });
+    store.getAll(Object.assign(store.params, { page }));
   };
 
   onCreate = () => {
