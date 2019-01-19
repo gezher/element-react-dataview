@@ -67,7 +67,7 @@ class DataForm extends React.Component {
     const computedProps = {
       name,
       value: typeof valueTransformer.in === 'function'
-        ? valueTransformer.in(value, model)
+        ? valueTransformer.in.call(this, value, model)
         : value,
       onChange: onChange || DataForm.createChangeHandler(dataform, name),
       placeholder: computeValue(placeholder, model),
@@ -165,7 +165,7 @@ class DataForm extends React.Component {
         this.state,
         key,
         field.valueTransformer && field.valueTransformer.out
-          ? field.valueTransformer.out(value, this.state)
+          ? field.valueTransformer.out.call(field, value, this.state)
           : value
       ));
     });
@@ -270,7 +270,7 @@ class DataForm extends React.Component {
     const props = {
       name,
       value: typeof valueTransformer.in === 'function'
-        ? valueTransformer.in(value, rowdata)
+        ? valueTransformer.in.call(field, value, rowdata)
         : value,
       onChange,
       placeholder: computeValue(placeholder, rowdata, field),
