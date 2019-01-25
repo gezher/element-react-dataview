@@ -232,7 +232,8 @@ class DataView extends React.Component {
       tableOptions,
       modifiable,
       deletable,
-      sortable
+      sortable,
+      operationColumn = {}
     } = props;
 
     const { default: defaultOrdering } = store.ordering;
@@ -245,7 +246,7 @@ class DataView extends React.Component {
           }] : []),
           ...store.columns,
           ...(modifiable || deletable || sortable
-            ? [{
+            ? [Object.assign({
               label: '操作',
               width: 180,
               className: 'column-type-operations',
@@ -256,7 +257,7 @@ class DataView extends React.Component {
                   <OperationColumn {...props} row={row} />
                 );
               }
-            }]
+            }, operationColumn)]
             : []
           )
         ]}
@@ -338,6 +339,7 @@ class DataView extends React.Component {
 
   onPageChange = (page) => {
     const { store } = this.props;
+    console.log(page);
     store.getAll(Object.assign(store.params, { page }));
   };
 
