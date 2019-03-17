@@ -255,34 +255,35 @@ class DataForm extends React.Component {
       valueTransformer = {}
     } = field;
     const {
-      rowdata = this.state,
+      formdata = this.state,
       onChange = this.createChangeHandler(name, fieldOnChange),
       placeholder
     } = options;
 
-    const formValue = getByNamespace(rowdata, name);
+    const formValue = getByNamespace(formdata, name);
     const {
       value = typeof formValue !== 'undefined'
         ? formValue
-        : computeValue(field.defaultValue, rowdata, field)
+        : computeValue(field.defaultValue, formdata, field)
     } = options;
 
     const props = {
       name,
       value: typeof valueTransformer.in === 'function'
-        ? valueTransformer.in.call(field, value, rowdata)
+        ? valueTransformer.in.call(field, value, formdata)
         : value,
       onChange,
-      placeholder: computeValue(placeholder, rowdata, field),
-      disabled: computeValue(disabled, rowdata, field),
-      readOnly: computeValue(readOnly, rowdata, field),
-      rowdata,
+      placeholder: computeValue(placeholder, formdata, field),
+      disabled: computeValue(disabled, formdata, field),
+      readOnly: computeValue(readOnly, formdata, field),
+      formdata,
+      // use `dataform` not `form` because Input component not allows
       dataform: this
     };
 
-    const selectableData = computeValue(dataSource, rowdata, field);
+    const selectableData = computeValue(dataSource, formdata, field);
     const { selectValueKey = 'id', selectTextKey = 'name', optionRender } = options;
-    const multiple = computeValue(options.multiple, rowdata, field);
+    const multiple = computeValue(options.multiple, formdata, field);
     let valueArray = [];
     if (typeof value !== 'undefined') {
       valueArray = Array.isArray(value) ? value : [value];
@@ -405,7 +406,7 @@ class DataForm extends React.Component {
         Object.assign({}, Editor.options, options)
       );
     } else if (Array.isArray(Editor)) {
-      const editor = Editor.find(candidate => computeValue(candidate.editable, rowdata, candidate));
+      const editor = Editor.find(item => computeValue(item.editable, formdata, item));
       if (!editor) {
         return null;
       }

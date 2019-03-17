@@ -69,7 +69,7 @@ class GroupEditor extends React.Component {
   }
 
   renderFieldsRow(row, index) {
-    const { fields, rowdata } = this.props;
+    const { fields, formdata } = this.props;
     const rowKey = row.id ? `data_${row.id}` : `temp_${index}`;
 
     return (
@@ -83,11 +83,13 @@ class GroupEditor extends React.Component {
             const options = {
               value: getByNamespace(row, name),
               onChange: this.createChangeHandler(name, index, fieldOnChange),
-              rowdata: row
+              rowdata: row,
+              // pass `formdata` to sub-component will cause value default to formdata in same name
+              formdata
             };
             if (typeof placeholder !== 'undefined') {
               options.placeholder = typeof placeholder === 'function'
-                ? placeholder.call(field, row, rowdata, index)
+                ? placeholder.call(field, row, formdata, index)
                 : placeholder;
             }
 
