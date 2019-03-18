@@ -12,10 +12,10 @@ export default class TagSelect extends React.Component {
     const {
       value,
       onChange,
-      rowdata,
+      formdata,
       multiple: multipleRaw
     } = this.props;
-    const multiple = computeValue(multipleRaw, rowdata);
+    const multiple = computeValue(multipleRaw, formdata);
     if (multiple) {
       // TODO: bug here when add button for <ALL> value
       onChange(value.find(vItem => vItem === v)
@@ -34,13 +34,13 @@ export default class TagSelect extends React.Component {
       selectValueKey = 'id',
       selectTextKey = 'name',
       dataSource,
-      rowdata,
+      formdata,
       multiple: multipleRaw
     } = this.props;
 
-    const multiple = computeValue(multipleRaw, rowdata);
+    const multiple = computeValue(multipleRaw, formdata);
 
-    const selectableData = computeValue(dataSource, rowdata);
+    const selectableData = computeValue(dataSource, formdata);
     const selected = multiple
       ? value
         .map(item => getPropertyOrValue(item, selectValueKey))
