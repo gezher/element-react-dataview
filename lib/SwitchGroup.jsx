@@ -13,10 +13,10 @@ export default class SwitchGroup extends React.Component {
       const {
         value,
         onChange,
-        rowdata,
+        formdata,
         multiple: multipleRaw
       } = this.props;
-      const multiple = computeValue(multipleRaw, rowdata);
+      const multiple = computeValue(multipleRaw, formdata);
       if (multiple) {
         onChange(v ? value.concat([v]) : value.filter(vItem => vItem !== id));
       } else {
@@ -34,13 +34,13 @@ export default class SwitchGroup extends React.Component {
       onText,
       offText,
       dataSource,
-      rowdata,
+      formdata,
       multiple: multipleRaw
     } = this.props;
 
-    const multiple = computeValue(multipleRaw, rowdata);
+    const multiple = computeValue(multipleRaw, formdata);
 
-    const selectableData = computeValue(dataSource, rowdata);
+    const selectableData = computeValue(dataSource, formdata);
     const selected = multiple
       ? value
         .map(item => getPropertyOrValue(item, selectValueKey))
