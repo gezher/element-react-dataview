@@ -2,9 +2,15 @@ import React from 'react';
 import { Button } from 'element-react';
 
 import DataForm from './DataForm';
-import { getByNamespace, setByNamespace, computeValue } from './utils';
+import { getByNamespace, setByNamespace } from './utils';
 
 import './groupeditor.less';
+
+
+
+function computeValue(value, row, formdata, index, scope) {
+  return typeof value === 'function' ? value.call(scope, row, formdata, index) : value;
+}
 
 
 
@@ -75,11 +81,15 @@ class GroupEditor extends React.Component {
     return (
       <tr key={rowKey}>
         {fields
-          .filter(field => computeValue(field.editable, row, field) !== false)
+          .filter(field => computeValue(field.editable, row, formdata, index, field) !== false)
           .map((field) => {
             const { editor, prop: name, onChange: fieldOnChange } = field;
             const { placeholder } = editor.options || {};
-            const argumentList = [field];
+            const fieldOptions = {};
+            ['disabled', 'readOnly', 'dataSource', 'defaultValue', 'editable'].forEach((key) => {
+              fieldOptions[key] = computeValue(field[key], row, formdata, index, field);
+            });
+            const argumentList = [Object.assign({}, field, fieldOptions)];
             const options = {
               value: getByNamespace(row, name),
               onChange: this.createChangeHandler(name, index, fieldOnChange),
@@ -88,9 +98,7 @@ class GroupEditor extends React.Component {
               formdata
             };
             if (typeof placeholder !== 'undefined') {
-              options.placeholder = typeof placeholder === 'function'
-                ? placeholder.call(field, row, formdata, index)
-                : placeholder;
+              options.placeholder = computeValue(placeholder, row, formdata, index, field);
             }
 
             if (editor.component) {
@@ -120,7 +128,8 @@ class GroupEditor extends React.Component {
     const {
       fields,
       creatable,
-      max = Infinity
+      max = Infinity,
+      formdata
     } = this.props;
 
     // 数量限制
@@ -132,7 +141,9 @@ class GroupEditor extends React.Component {
     if (buffer.length) {
       const lastRow = buffer[buffer.length - 1];
       const lastEmpty = fields
-        .filter(field => computeValue(field.editable, lastRow, field) !== false)
+        .filter((field, index) => (
+          computeValue(field.editable, lastRow, formdata, index, field) !== false
+        ))
         .every((field) => {
           const v = getByNamespace(lastRow, field.prop);
           return v === '' || v == null || v === field.defaultValue;
