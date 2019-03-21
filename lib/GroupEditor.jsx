@@ -75,7 +75,7 @@ class GroupEditor extends React.Component {
   }
 
   renderFieldsRow(row, index) {
-    const { fields, formdata } = this.props;
+    const { fields, formdata, dataform } = this.props;
     const rowKey = row.id ? `data_${row.id}` : `temp_${index}`;
 
     return (
@@ -86,16 +86,24 @@ class GroupEditor extends React.Component {
             const { editor, prop: name, onChange: fieldOnChange } = field;
             const { placeholder } = editor.options || {};
             const fieldOptions = {};
-            ['disabled', 'readOnly', 'dataSource', 'defaultValue', 'editable'].forEach((key) => {
-              fieldOptions[key] = computeValue(field[key], row, formdata, index, field);
+            ['disabled', 'readOnly', 'dataSource', 'editable'].forEach((key) => {
+              const computed = computeValue(field[key], row, formdata, index, field);
+              if (typeof computed !== 'undefined') {
+                fieldOptions[key] = computed;
+              }
             });
             const argumentList = [Object.assign({}, field, fieldOptions)];
+            const value = getByNamespace(row, name);
+            const defaultValue = (
+              computeValue(fieldOptions.defaultValue, row, formdata, index, field)
+            );
+            const finalDefaultValue = typeof defaultValue !== 'undefined' ? defaultValue : null;
             const options = {
-              value: getByNamespace(row, name),
+              value: typeof value !== 'undefined' ? value : finalDefaultValue,
               onChange: this.createChangeHandler(name, index, fieldOnChange),
-              rowdata: row,
+              rowdata: row
               // pass `formdata` to sub-component will cause value default to formdata in same name
-              formdata
+              // formdata
             };
             if (typeof placeholder !== 'undefined') {
               options.placeholder = computeValue(placeholder, row, formdata, index, field);
@@ -114,7 +122,7 @@ class GroupEditor extends React.Component {
 
             return (
               <td key={fieldKey} className={`column-${field.prop.replace(/\./g, '-')}`}>
-                {DataForm.prototype.renderField.apply(this, argumentList)}
+                {DataForm.prototype.renderField.apply(dataform, argumentList)}
               </td>
             );
           })
