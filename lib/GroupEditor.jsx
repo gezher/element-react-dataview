@@ -95,7 +95,7 @@ class GroupEditor extends React.Component {
             const argumentList = [Object.assign({}, field, fieldOptions)];
             const value = getByNamespace(row, name);
             const defaultValue = (
-              computeValue(fieldOptions.defaultValue, row, formdata, index, field)
+              computeValue(field.defaultValue, row, formdata, index, field)
             );
             const finalDefaultValue = typeof defaultValue !== 'undefined' ? defaultValue : null;
             const options = {
