@@ -285,13 +285,13 @@ class DataForm extends React.Component {
     const { selectValueKey = 'id', selectTextKey = 'name', optionRender } = options;
     const multiple = computeValue(options.multiple, formdata, field);
     let valueArray = [];
-    if (typeof value !== 'undefined') {
-      valueArray = Array.isArray(value) ? value : [value];
+    if (typeof props.value !== 'undefined') {
+      valueArray = Array.isArray(props.value) ? props.value : [props.value];
     }
     const selected = multiple || Editor === 'checkbox'
       ? valueArray.map(item => getPropertyOrValue(item, selectValueKey))
         .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
-      : getPropertyOrValue(value, selectValueKey);
+      : getPropertyOrValue(props.value, selectValueKey);
 
     const typeOfEditor = typeof Editor;
 
