@@ -233,6 +233,7 @@ class DataView extends React.Component {
       modifiable,
       deletable,
       sortable,
+      managable,
       operationColumn = {}
     } = props;
 
@@ -245,7 +246,7 @@ class DataView extends React.Component {
             type: 'selection'
           }] : []),
           ...store.columns,
-          ...(modifiable || deletable || sortable
+          ...(modifiable || deletable || sortable || managable
             ? [Object.assign({
               label: '操作',
               width: 180,
