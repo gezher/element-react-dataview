@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Switch } from 'element-react';
 
 import { computeValue, getPropertyOrValue } from './utils';
@@ -7,7 +8,8 @@ import './switchgroup.less';
 
 
 
-export default class SwitchGroup extends React.Component {
+@observer
+class SwitchGroup extends React.Component {
   createChangeHandler(id) {
     return (v) => {
       const {
@@ -75,3 +77,5 @@ export default class SwitchGroup extends React.Component {
     );
   }
 }
+
+export default SwitchGroup;

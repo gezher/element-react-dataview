@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Button } from 'element-react';
 
 import { computeValue, getPropertyOrValue } from './utils';
@@ -7,7 +8,8 @@ import './tagselect.less';
 
 
 
-export default class TagSelect extends React.Component {
+@observer
+class TagSelect extends React.Component {
   onChange = (v) => {
     const {
       value,
@@ -72,3 +74,5 @@ export default class TagSelect extends React.Component {
     );
   }
 }
+
+export default TagSelect;
