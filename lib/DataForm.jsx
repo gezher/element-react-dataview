@@ -315,14 +315,14 @@ class DataForm extends React.Component {
         case 'select':
           return (
             <Select {...options} {...props} value={selected}>
-              {selectableData.map(item => (
+              {selectableData.map((item, index) => (
                 <Select.Option
                   key={item[selectValueKey]}
                   value={item[selectValueKey]}
                   label={item[selectTextKey]}
                   disabled={item.disabled}
                 >
-                  {optionRender ? optionRender.call(this, item, selected) : null}
+                  {optionRender ? optionRender.call(this, item, index, selected) : null}
                 </Select.Option>
               ))}
             </Select>
