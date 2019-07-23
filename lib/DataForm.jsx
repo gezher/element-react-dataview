@@ -120,8 +120,8 @@ class DataForm extends React.Component {
     };
   }
 
-  static getDerivedStateFromProps({ model }, state) {
-    return state || model;
+  static getDerivedStateFromProps({ model, onChange }, state) {
+    return onChange ? model : (state || model);
   }
 
   static setValidation(instance, errors) {
