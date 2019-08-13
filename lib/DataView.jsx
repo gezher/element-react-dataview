@@ -338,6 +338,11 @@ class DataView extends React.Component {
     store.getAll(Object.keys(store.params).length ? store.params : defaultParams);
   }
 
+  componentWillUnmount() {
+    const { defaultParams = {}, store } = this.props;
+    store.setParams(defaultParams);
+  }
+
   onPageChange = (page) => {
     const { store } = this.props;
     store.getAll(Object.assign(store.params, { page }));
