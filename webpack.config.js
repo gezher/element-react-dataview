@@ -1,6 +1,6 @@
-const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 
 
@@ -78,14 +78,21 @@ module.exports = {
     extensions: ['.js', '.jsx']
   },
   target: 'web',
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        sourceMap: true,
+        uglifyOptions: {
+          ecma: 8,
+          warnings: false,
+          comments: false
+        }
+      })
+    ]
+  },
   plugins: [
     new CleanWebpackPlugin('./dist', {
       verbose: true
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      output: {
-        comments: false
-      }
     })
   ]
 };

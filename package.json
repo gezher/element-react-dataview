@@ -39,7 +39,8 @@
     "postcss-loader": "2.0.6",
     "pre-commit": "1.2.2",
     "style-loader": "0.18.2",
-    "webpack": "3.5.4"
+    "uglifyjs-webpack-plugin": "2.2.0",
+    "webpack": "4.20.2"
   },
   "peerDependencies": {
     "element-react": "^1.4.19",
