@@ -455,8 +455,13 @@ class DataView extends React.Component {
 
   onSortEnd = (row, change) => {
     const { store } = this.props;
+    const { priorityScopeKeys } = store;
+    const where = {};
+    priorityScopeKeys.forEach((key) => {
+      where[key] = row[key];
+    });
     const number = Number(change);
-    store.sort(row.id, Number.isFinite(number) ? number : change).then(() => {
+    store.sort(row.id, Number.isFinite(number) ? number : change, where).then(() => {
       Message.success({ message: '操作成功！' });
       store.reload();
     }, (error) => {
