@@ -118,8 +118,8 @@ class DataView extends React.Component {
           className="filter-panel"
           fields={store.filterFields}
           model={store.params}
-          onSubmit={filterTrigger === 'submit' ? query => store.getAll(query) : null}
-          onChange={filterTrigger === 'change' ? query => store.getAll(query) : null}
+          onSubmit={filterTrigger === 'submit' ? query => store.reload(query) : null}
+          onChange={filterTrigger === 'change' ? query => store.reload(query) : null}
           renderOperations={filterTrigger === 'submit' ? undefined : () => null}
         />
       )
