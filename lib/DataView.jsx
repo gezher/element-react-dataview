@@ -498,7 +498,7 @@ class DataView extends React.Component {
           'pagination',
           'form'
         ].map((key) => {
-          const Component = props.component[key]
+          const Component = (props.component && props.component[key])
             || this.constructor[this.constructor.blockMap[key]];
           return Component ? <Component key={key} {...combinedProps} /> : null;
         })}
