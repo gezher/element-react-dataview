@@ -70,7 +70,7 @@ class DataView extends React.Component {
   ));
 
   static SortSwitch = observer(({
-    state,
+    panel,
     store,
     sortable,
     onSortStart
@@ -79,7 +79,7 @@ class DataView extends React.Component {
       return null;
     }
 
-    const { sortEnabled } = state;
+    const { sortEnabled } = panel.state;
 
     const { ordering, priorityKey } = store;
 
@@ -97,7 +97,7 @@ class DataView extends React.Component {
   });
 
   static OperationBar = observer((props) => {
-    const AddButton = (props.context || {}).addButton
+    const AddButton = (props.component || {}).addButton
       || DataView.AddButton;
 
     return (
@@ -171,13 +171,13 @@ class DataView extends React.Component {
   ));
 
   static SortDropdown = observer(({
-    state,
+    panel,
     store,
     sortable,
     onSortEnd,
     row
   }) => {
-    const { sortEnabled } = state;
+    const { sortEnabled } = panel.state;
     const { priorityKey, ordering } = store;
 
     if (!sortable
@@ -227,7 +227,7 @@ class DataView extends React.Component {
 
   static Table = observer((props) => {
     const {
-      context,
+      component,
       store,
       tableOptions,
       modifiable,
@@ -252,7 +252,7 @@ class DataView extends React.Component {
               width: 180,
               className: 'column-type-operations',
               render: (row) => {
-                const OperationColumn = (context || {}).tableOperationColumn
+                const OperationColumn = (component || {}).tableOperationColumn
                   || DataView.OperationColumn;
                 return (
                   <OperationColumn {...props} row={row} />
@@ -287,8 +287,7 @@ class DataView extends React.Component {
   ));
 
   static Form = observer(({
-    state,
-    formRef,
+    panel,
     title,
     size,
     dialogClass,
@@ -299,12 +298,12 @@ class DataView extends React.Component {
     modifyButtonText = '编辑'
   }) => (
     <FormDialog
-      ref={formRef}
-      title={`${state.form && state.form.id ? modifyButtonText : addButtonText}${title}`}
+      ref={panel.formRef}
+      title={`${panel.state.form && panel.state.form.id ? modifyButtonText : addButtonText}${title}`}
       size={size}
       customClass={dialogClass}
       fields={store.formFields}
-      model={state.form}
+      model={panel.state.form}
       onSubmit={onSubmit}
       onCancel={onCancel}
     />
@@ -469,8 +468,8 @@ class DataView extends React.Component {
     });
   };
 
-  renderDefaultContent(context) {
-    const { children, component, ...props } = this.props;
+  renderDefaultContent() {
+    const { children, ...props } = this.props;
     const events = pick(this, [
       'onPageChange',
       'onCreate',
@@ -483,11 +482,9 @@ class DataView extends React.Component {
     ]);
 
     const combinedProps = {
-      context,
+      panel: this,
       ...events,
-      ...props,
-      state: this.state,
-      formRef: this.form
+      ...props
     };
 
     return (
@@ -501,7 +498,7 @@ class DataView extends React.Component {
           'pagination',
           'form'
         ].map((key) => {
-          const Component = (context || {})[key]
+          const Component = props.component[key]
             || this.constructor[this.constructor.blockMap[key]];
           return Component ? <Component key={key} {...combinedProps} /> : null;
         })}
@@ -512,45 +509,14 @@ class DataView extends React.Component {
   render() {
     const {
       className,
-      component,
       children
     } = this.props;
 
-    let content;
-
-    switch (typeof children) {
-      case 'function':
-        content = children();
-        break;
-      case 'undefined':
-        content = null;
-        break;
-      default:
-        content = children;
-        break;
-    }
-
-    if (!content) {
-      switch (typeof component) {
-        case 'function':
-          content = component();
-          break;
-        case 'object':
-          content = component;
-          break;
-        case 'undefined':
-        default:
-          content = null;
-          break;
-      }
-    }
+    const content = children ? children(this) : this.renderDefaultContent();
 
     return (
       <section className={['block-dataview', ...((className || '').toString().split(/[, ]/))].join(' ')}>
-        {typeof content === 'object'
-          ? this.renderDefaultContent(content)
-          : content
-        }
+        {content}
       </section>
     );
   }
