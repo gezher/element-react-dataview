@@ -1,7 +1,6 @@
 const autoprefixer = require('autoprefixer');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 
@@ -61,7 +60,7 @@ module.exports = {
       {
         test: /\.css$|\.less$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          'style-loader',
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -94,7 +93,6 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin('./dist', {
       verbose: true
-    }),
-    new MiniCssExtractPlugin()
+    })
   ]
 };
