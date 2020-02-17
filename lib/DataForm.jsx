@@ -431,15 +431,13 @@ class DataForm extends React.Component {
           ? field.getKey(index)
           : `${index}_${name}`;
 
-        const renderedField = this.renderField(field, field.editor);
-
         return (
           <Form.Item
             label={field.label}
             key={fieldKey}
             prop={name}
           >
-            {renderedField}
+            {this.renderField(field, field.editor)}
           </Form.Item>
         );
       });
