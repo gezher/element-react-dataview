@@ -298,7 +298,7 @@ class DataView extends React.Component {
     modifyButtonText = '编辑'
   }) => (
     <FormDialog
-      ref={panel.formRef}
+      ref={panel.form}
       title={`${panel.state.form && panel.state.form.id ? modifyButtonText : addButtonText}${title}`}
       size={size}
       customClass={dialogClass}
