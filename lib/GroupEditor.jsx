@@ -81,48 +81,53 @@ class GroupEditor extends React.Component {
     return (
       <tr key={rowKey}>
         {fields
-          .filter(field => computeValue(field.editable, row, formdata, index, field) !== false)
           .map((field) => {
             const { editor, prop: name, onChange: fieldOnChange } = field;
-            const { placeholder } = editor.options || {};
-            const fieldOptions = {};
-            ['disabled', 'readOnly', 'dataSource', 'editable'].forEach((key) => {
-              const computed = computeValue(field[key], row, formdata, index, field);
-              if (typeof computed !== 'undefined') {
-                fieldOptions[key] = computed;
-              }
-            });
-            const argumentList = [Object.assign({}, field, fieldOptions)];
-            const value = getByNamespace(row, name);
-            const defaultValue = (
-              computeValue(field.defaultValue, row, formdata, index, field)
-            );
-            const finalDefaultValue = typeof defaultValue !== 'undefined' ? defaultValue : null;
-            const options = {
-              value: typeof value !== 'undefined' ? value : finalDefaultValue,
-              onChange: this.createChangeHandler(name, index, fieldOnChange),
-              rowdata: row
-              // pass `formdata` to sub-component will cause value default to formdata in same name
-              // formdata
-            };
-            if (typeof placeholder !== 'undefined') {
-              options.placeholder = computeValue(placeholder, row, formdata, index, field);
-            }
-
-            if (editor.component) {
-              argumentList.push(
-                editor.component,
-                Object.assign({}, editor.options, options)
-              );
-            } else {
-              argumentList.push(editor, options);
-            }
-
             const fieldKey = `${rowKey}_${name}`;
+
+            let content = null;
+            if (computeValue(field.editable, row, formdata, index, field) !== false) {
+              const { placeholder } = editor.options || {};
+              const fieldOptions = {};
+              ['disabled', 'readOnly', 'dataSource', 'editable'].forEach((key) => {
+                const computed = computeValue(field[key], row, formdata, index, field);
+                if (typeof computed !== 'undefined') {
+                  fieldOptions[key] = computed;
+                }
+              });
+              const argumentList = [Object.assign({}, field, fieldOptions)];
+              const value = getByNamespace(row, name);
+              const defaultValue = (
+                computeValue(field.defaultValue, row, formdata, index, field)
+              );
+              const finalDefaultValue = typeof defaultValue !== 'undefined' ? defaultValue : null;
+              const options = {
+                value: typeof value !== 'undefined' ? value : finalDefaultValue,
+                onChange: this.createChangeHandler(name, index, fieldOnChange),
+                rowdata: row
+                // pass `formdata` to sub-component will cause
+                // value default to formdata in same name
+                // formdata
+              };
+              if (typeof placeholder !== 'undefined') {
+                options.placeholder = computeValue(placeholder, row, formdata, index, field);
+              }
+
+              if (editor.component) {
+                argumentList.push(
+                  editor.component,
+                  Object.assign({}, editor.options, options)
+                );
+              } else {
+                argumentList.push(editor, options);
+              }
+
+              content = DataForm.prototype.renderField.apply(dataform, argumentList);
+            }
 
             return (
               <td key={fieldKey} className={`column-${field.prop.replace(/\./g, '-')}`}>
-                {DataForm.prototype.renderField.apply(dataform, argumentList)}
+                {content}
               </td>
             );
           })
