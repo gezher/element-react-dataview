@@ -151,7 +151,7 @@ class DataForm extends React.Component {
     if (!current) {
       return;
     }
-    current.state.fields.forEach(field => {
+    current.state.fields.forEach((field) => {
       field.setState({
         error: '',
         validating: false,
@@ -178,36 +178,6 @@ class DataForm extends React.Component {
   }
 
   form = React.createRef();
-
-  validate() {
-    const { current } = this.form;
-    if (!current) {
-      return Promise.resolve(true);
-    }
-    // hack into Form of element-react
-    const { fields } = current.state;
-    if (!fields.length) {
-      return Promise.resolve(true);
-    }
-
-    return new Promise((resolve, reject) => {
-      fields.forEach((field) => {
-        field.validate('', (error) => {
-          count += 1;
-          if (error) {
-            errors[field.props.prop] = error;
-          }
-
-          if (count === fields.length) {
-            if (!Object.keys(errors).length) {
-              return resolve(true);
-            }
-            return reject(errors);
-          }
-        });
-      });
-    });
-  }
 
   onFieldChange(data) {
     const { fields, onChange } = this.props;
@@ -268,6 +238,40 @@ class DataForm extends React.Component {
     });
 
     return data;
+  }
+
+  validate() {
+    const { current } = this.form;
+    if (!current) {
+      return Promise.resolve(true);
+    }
+    // hack into Form of element-react
+    const { fields } = current.state;
+    if (!fields.length) {
+      return Promise.resolve(true);
+    }
+
+    const errors = {};
+
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      fields.forEach((field) => {
+        field.validate('', (error) => {
+          count += 1;
+          if (error) {
+            errors[field.props.prop] = error;
+          }
+
+          if (count === fields.length) {
+            if (!Object.keys(errors).length) {
+              resolve(true);
+              return;
+            }
+            reject(errors);
+          }
+        });
+      });
+    });
   }
 
   createChangeHandler(key, fieldOnChange) {
