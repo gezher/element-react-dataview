@@ -125,9 +125,13 @@ class DataForm extends React.Component {
   }
 
   static setValidation(instance, errors) {
+    const { current } = instance.form;
+    if (!current) {
+      return;
+    }
     const errorKeys = Object.keys(errors);
     errorKeys.forEach((name, index) => {
-      const field = instance.form.state.fields.find(f => f.props.prop === name);
+      const field = current.state.fields.find(f => f.props.prop === name);
       if (field) {
         field.setState({
           error: errors[name],
@@ -142,10 +146,28 @@ class DataForm extends React.Component {
     });
   }
 
+  static resetValidation(instance) {
+    const { current } = instance.form;
+    if (!current) {
+      return;
+    }
+    current.state.fields.forEach(field => {
+      field.setState({
+        error: '',
+        validating: false,
+        valid: true
+      });
+    });
+  }
+
   static focusErrorField(instance, errors) {
+    const { current } = instance.form;
+    if (!current) {
+      return;
+    }
     const errorKeys = Object.keys(errors);
     if (errorKeys.length) {
-      const component = instance.form.state.fields.find(field => field.props.prop === errorKeys[0]);
+      const component = current.state.fields.find(field => field.props.prop === errorKeys[0]);
       if (component) {
         // eslint-disable-next-line
         findDOMNode(component).scrollIntoView({
@@ -154,6 +176,8 @@ class DataForm extends React.Component {
       }
     }
   }
+
+  form = React.createRef();
 
   onFieldChange(data) {
     const { fields, onChange } = this.props;
@@ -178,33 +202,19 @@ class DataForm extends React.Component {
   onSubmit = (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
-    // hack into Form of element-react
-    const { fields } = this.form.state;
+
     const { onSubmit } = this.props;
-    const errors = {};
 
-    if (fields.length) {
-      let count = 0;
-      fields.forEach((field) => {
-        field.validate('', (error) => {
-          count += 1;
-          if (error) {
-            errors[field.props.prop] = error;
-          }
-
-          if (count === fields.length) {
-            const errorKeys = Object.keys(errors);
-            if (errorKeys.length) {
-              this.constructor.focusErrorField(this, errors);
-            } else if (typeof onSubmit === 'function') {
-              onSubmit(this.getFormData());
-            }
-          }
-        });
+    this
+      .validate()
+      .then(() => {
+        if (typeof onSubmit === 'function') {
+          onSubmit(this.getFormData());
+        }
+      })
+      .catch((errors) => {
+        this.constructor.focusErrorField(this, errors);
       });
-    } else if (typeof onSubmit === 'function') {
-      onSubmit(this.getFormData());
-    }
   };
 
   onCancel = () => {
@@ -228,6 +238,39 @@ class DataForm extends React.Component {
     });
 
     return data;
+  }
+
+  validate() {
+    const { current } = this.form;
+    if (!current) {
+      return Promise.resolve(true);
+    }
+    // hack into Form of element-react
+    const { fields } = current.state;
+    if (!fields.length) {
+      return Promise.resolve(true);
+    }
+
+    const errors = {};
+
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      fields.forEach((field) => {
+        field.validate('', (error) => {
+          count += 1;
+          if (error) {
+            errors[field.props.prop] = error;
+          }
+
+          if (count === fields.length) {
+            if (!Object.keys(errors).length) {
+              return resolve(true);
+            }
+            return reject(errors);
+          }
+        });
+      });
+    });
   }
 
   createChangeHandler(key, fieldOnChange) {
@@ -385,8 +428,8 @@ class DataForm extends React.Component {
                 key: item[selectValueKey],
                 label: item[selectTextKey]
               }))}
-              {...props}
               {...options}
+              {...props}
             />
           );
 
@@ -498,9 +541,7 @@ class DataForm extends React.Component {
 
     return (
       <Form
-        ref={(ref) => {
-          this.form = ref;
-        }}
+        ref={this.form}
         {...props}
         model={this.state}
         onSubmit={this.onSubmit}
