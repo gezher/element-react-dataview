@@ -238,7 +238,7 @@ class DataView extends React.Component {
     } = props;
 
     const { default: defaultOrdering } = store.ordering;
-
+    // console.log(store.list);
     return (
       <Table
         columns={[
@@ -262,7 +262,7 @@ class DataView extends React.Component {
             : []
           )
         ]}
-        data={[...store.list]}
+        data={store.list}
         emptyText={store.loading ? '加载中' : '无数据'}
         border
         defaultSort={defaultOrdering && defaultOrdering.length && {
@@ -338,8 +338,10 @@ class DataView extends React.Component {
   }
 
   componentWillUnmount() {
-    const { defaultParams = {}, store } = this.props;
-    store.setParams(defaultParams);
+    const { store, preserveData = false } = this.props;
+    if (!preserveData) {
+      store.reset();
+    }
   }
 
   onPageChange = (page) => {
