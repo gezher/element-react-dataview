@@ -320,7 +320,8 @@ class DataForm extends React.Component {
         : value,
       onChange,
       placeholder: computeValue(placeholder, formdata, field),
-      disabled: formDisabled || computeValue(disabled, formdata, field),
+      disabled: computeValue(formDisabled, formdata, this)
+        || computeValue(disabled, formdata, field),
       readOnly: computeValue(readOnly, formdata, field),
       formdata,
       // use `dataform` not `form` because Input component not allows
@@ -494,7 +495,13 @@ class DataForm extends React.Component {
 
     return (
       <p className="operation">
-        <Button type="primary" nativeType="submit" disabled={disabled}>{submitText}</Button>
+        <Button
+          type="primary"
+          nativeType="submit"
+          disabled={computeValue(disabled, this.state, this)}
+        >
+          {submitText}
+        </Button>
         {onCancel && <Button onClick={this.onCancel}>取消</Button>}
       </p>
     );

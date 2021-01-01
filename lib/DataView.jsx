@@ -296,7 +296,7 @@ class DataView extends React.Component {
     onCancel,
     addButtonText = '添加',
     modifyButtonText = '编辑',
-    ...formOptions
+    formOptions
   }) => (
     <FormDialog
       ref={panel.form}
