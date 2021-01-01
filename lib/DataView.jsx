@@ -295,7 +295,8 @@ class DataView extends React.Component {
     onSubmit,
     onCancel,
     addButtonText = '添加',
-    modifyButtonText = '编辑'
+    modifyButtonText = '编辑',
+    ...formOptions
   }) => (
     <FormDialog
       ref={panel.form}
@@ -306,6 +307,7 @@ class DataView extends React.Component {
       model={panel.state.form}
       onSubmit={onSubmit}
       onCancel={onCancel}
+      {...formOptions}
     />
   ));
 
