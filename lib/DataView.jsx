@@ -351,10 +351,8 @@ class DataView extends React.Component {
     store.getAll(Object.assign(store.params, { page }));
   };
 
-  onCreate = () => {
-    this.setState({
-      form: {}
-    });
+  onCreate = (form = {}) => {
+    this.setState({ form });
   };
 
   onModify = (row) => {

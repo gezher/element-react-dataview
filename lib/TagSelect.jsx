@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { Button } from 'element-react';
 
 import { computeValue, getPropertyOrValue } from './utils';
+import { FieldsetContext } from './Fieldset';
 
 import './tagselect.less';
 
@@ -36,41 +37,46 @@ class TagSelect extends React.Component {
       selectValueKey = 'id',
       selectTextKey = 'name',
       dataSource,
-      formdata,
       multiple: multipleRaw
     } = this.props;
 
-    const multiple = computeValue(multipleRaw, formdata);
-
-    const selectableData = computeValue(dataSource, formdata);
-    const selected = multiple
-      ? value
-        .map(item => getPropertyOrValue(item, selectValueKey))
-        .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
-      : getPropertyOrValue(value, selectValueKey);
-
     return (
-      <ul className="component-tag-select">
-        {selectableData.map((item) => {
-          const id = item[selectValueKey];
-          const itemSelected = multiple
-            ? selected.includes(id)
-            : selected === id;
+      <FieldsetContext.Consumer>
+        {({ data }) => {
+          const multiple = computeValue(multipleRaw, data);
+
+          const selectableData = computeValue(dataSource, data);
+          const selected = multiple
+            ? value
+              .map(item => getPropertyOrValue(item, selectValueKey))
+              .filter(v => typeof selectableData.find(item => v === item[selectValueKey]) !== 'undefined')
+            : getPropertyOrValue(value, selectValueKey);
 
           return (
-            <li key={typeof id !== 'undefined' ? id : ''}>
-              <Button
-                type={itemSelected ? 'primary' : 'text'}
-                size={size}
-                disabled={disabled || item.disabled}
-                onClick={() => this.onChange(id)}
-              >
-                {item[selectTextKey]}
-              </Button>
-            </li>
+            <ul className="component-tag-select">
+              {selectableData.map((item) => {
+                const id = item[selectValueKey];
+                const itemSelected = multiple
+                  ? selected.includes(id)
+                  : selected === id;
+
+                return (
+                  <li key={id != null ? id : ''}>
+                    <Button
+                      type={itemSelected ? 'primary' : 'text'}
+                      size={size}
+                      disabled={disabled || item.disabled}
+                      onClick={() => this.onChange(id)}
+                    >
+                      {item[selectTextKey]}
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
           );
-        })}
-      </ul>
+        }}
+      </FieldsetContext.Consumer>
     );
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'element-react';
 
-import DataForm from './DataForm';
+import Fieldset from './Fieldset';
 import { getByNamespace, setByNamespace } from './utils';
 
 import './groupeditor.less';
@@ -32,21 +32,13 @@ class GroupEditor extends React.Component {
     onChange(value);
   }
 
-  createChangeHandler(name, index, fieldOnChange) {
+  createRowChangeHandler(index) {
     return (v) => {
       const {
         value = [],
         min,
-        fields,
-        dataform,
         onChange
       } = this.props;
-
-      const field = fields.find(f => f.prop === name);
-
-      if (fieldOnChange && fieldOnChange.call(field, v, dataform, this, index) === false) {
-        return;
-      }
 
       const count = value.length;
       const buffer = count < min ? [
@@ -55,83 +47,25 @@ class GroupEditor extends React.Component {
         ...Array(min - count).fill(null).map(() => ({}))
       ] : value;
 
-      const { valueTransformer } = field;
-      setByNamespace(buffer[index], name, valueTransformer && typeof valueTransformer.out === 'function'
-        ? valueTransformer.out(v, buffer[index])
-        : v);
+      buffer.splice(index, 1, v);
 
-      const result = buffer.map((row) => {
-        const data = Object.assign({}, row);
-        fields.forEach((f) => {
-          const { prop } = f;
-          setByNamespace(data, prop, getByNamespace(row, prop));
-        });
-
-        return data;
-      });
-
-      onChange(result);
+      onChange(buffer);
     };
   }
 
   renderFieldsRow(row, index) {
-    const { fields, formdata, dataform } = this.props;
+    const { fields } = this.props;
     const rowKey = row.id ? `data_${row.id}` : `temp_${index}`;
-
     return (
       <tr key={rowKey}>
-        {fields
-          .map((field) => {
-            const { editor, prop: name, onChange: fieldOnChange } = field;
-            const fieldKey = `${rowKey}_${name}`;
-
-            let content = null;
-            if (computeValue(field.editable, row, formdata, index, field) !== false) {
-              const { placeholder } = editor.options || {};
-              const fieldOptions = {};
-              ['disabled', 'readOnly', 'dataSource', 'editable'].forEach((key) => {
-                const computed = computeValue(field[key], row, formdata, index, field);
-                if (typeof computed !== 'undefined') {
-                  fieldOptions[key] = computed;
-                }
-              });
-              const argumentList = [Object.assign({}, field, fieldOptions)];
-              const value = getByNamespace(row, name);
-              const defaultValue = (
-                computeValue(field.defaultValue, row, formdata, index, field)
-              );
-              const finalDefaultValue = typeof defaultValue !== 'undefined' ? defaultValue : null;
-              const options = {
-                value: typeof value !== 'undefined' ? value : finalDefaultValue,
-                onChange: this.createChangeHandler(name, index, fieldOnChange),
-                rowdata: row
-                // pass `formdata` to sub-component will cause
-                // value default to formdata in same name
-                // formdata
-              };
-              if (typeof placeholder !== 'undefined') {
-                options.placeholder = computeValue(placeholder, row, formdata, index, field);
-              }
-
-              if (editor.component) {
-                argumentList.push(
-                  editor.component,
-                  Object.assign({}, editor.options, options)
-                );
-              } else {
-                argumentList.push(editor, options);
-              }
-
-              content = DataForm.prototype.renderField.apply(dataform, argumentList);
-            }
-
-            return (
-              <td key={fieldKey} className={`column-${field.prop.replace(/\./g, '-')}`}>
-                {content}
-              </td>
-            );
-          })
-        }
+        <Fieldset
+          fields={fields.map(f => ({ labelWidth: 0, ...f }))}
+          value={row}
+          onChange={this.createRowChangeHandler(index)}
+          fieldWrapperProps={{
+            Component: 'td'
+          }}
+        />
         {this.renderRemoveButton(row, index)}
       </tr>
     );
