@@ -56,6 +56,7 @@ function Field(props) {
     <Wrapper
       Component={wrapperComponent}
       {...{
+        prop,
         label,
         labelWidth,
         className,

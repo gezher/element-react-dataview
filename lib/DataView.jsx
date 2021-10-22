@@ -66,7 +66,9 @@ class DataView extends React.Component {
     addButtonText = '添加',
     children
   }) => (
-    creatable ? <Button type={type} onClick={onCreate}>{addButtonText || children}</Button> : null
+    creatable
+      ? <Button type={type} onClick={() => onCreate()}>{addButtonText || children}</Button>
+      : null
   ));
 
   static SortSwitch = observer(({
@@ -311,7 +313,11 @@ class DataView extends React.Component {
     />
   ));
 
-  static handleFormInvalidation({ current: form }, data) {
+  static handleFormInvalidation(instance, data) {
+    const { current: form } = instance;
+    if (!form) {
+      return;
+    }
     const errors = {};
 
     Object.keys(data).forEach((key) => {
@@ -323,7 +329,7 @@ class DataView extends React.Component {
         .join('；');
     });
 
-    DataForm.setValidation(form, errors);
+    DataForm.setValidation(instance, errors);
   }
 
   state = {
@@ -399,25 +405,27 @@ class DataView extends React.Component {
       promise = store.create(formData);
     }
 
-    promise.then(() => {
-      this.onCancel();
-      Message.success({ message: '操作成功！' });
-      store.reload();
-    }, (request) => {
-      const { status, data } = request.response;
-      switch (status) {
-        case 422:
-          this.constructor.handleFormInvalidation(this.form, data.body);
-          break;
+    promise
+      .then(() => {
+        this.onCancel();
+        Message.success({ message: '操作成功！' });
+        store.reload();
+      })
+      .catch((err) => {
+        const { status, data } = err.response;
+        switch (status) {
+          case 422:
+            this.constructor.handleFormInvalidation(this.form, data.body);
+            break;
 
-        default:
-          if (onError) {
-            onError({ status, error: data });
-          }
-      }
+          default:
+            if (onError) {
+              onError({ status, error: data });
+            }
+        }
 
-      Message.error({ message: '操作失败' });
-    });
+        Message.error({ message: '操作失败' });
+      });
   };
 
   onCancel = () => {

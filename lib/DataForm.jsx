@@ -29,13 +29,17 @@ class DataForm extends React.Component {
   }
 
   static setValidation(instance, errors) {
-    const { current } = instance.form;
+    const { current } = instance;
     if (!current) {
+      return;
+    }
+    const { current: form } = current.form;
+    if (!form) {
       return;
     }
     const errorKeys = Object.keys(errors);
     errorKeys.forEach((name, index) => {
-      const field = current.state.fields.find(f => f.props.prop === name);
+      const field = form.state.fields.find(f => f.props.prop === name);
       if (field) {
         field.setState({
           error: errors[name],
@@ -51,11 +55,15 @@ class DataForm extends React.Component {
   }
 
   static resetValidation(instance) {
-    const { current } = instance.form;
+    const { current } = instance;
     if (!current) {
       return;
     }
-    current.state.fields.forEach((field) => {
+    const { current: form } = current.form;
+    if (!form) {
+      return;
+    }
+    form.state.fields.forEach((field) => {
       field.setState({
         error: '',
         validating: false,
@@ -65,16 +73,21 @@ class DataForm extends React.Component {
   }
 
   static focusErrorField(instance, errors) {
-    const { current } = instance.form;
+    const { current } = instance;
     if (!current) {
+      return;
+    }
+    const { current: form } = current.form;
+    if (!form) {
       return;
     }
     const errorKeys = Object.keys(errors);
     if (errorKeys.length) {
-      const component = current.state.fields.find(field => field.props.prop === errorKeys[0]);
+      const component = form.state.fields.find(field => errorKeys.includes(field.props.prop));
       if (component) {
         // eslint-disable-next-line
-        findDOMNode(component).scrollIntoView({
+        const node = findDOMNode(component);
+        node.scrollIntoView({
           behavior: 'smooth'
         });
       }
