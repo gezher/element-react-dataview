@@ -412,19 +412,22 @@ class DataView extends React.Component {
         store.reload();
       })
       .catch((err) => {
+        let message = '操作失败';
         const { status, data } = err.response;
         switch (status) {
           case 422:
+            message = '数据验证失败，请检查后重新提交';
             this.constructor.handleFormInvalidation(this.form, data.body);
             break;
 
           default:
             if (onError) {
               onError({ status, error: data });
+              return;
             }
         }
 
-        Message.error({ message: '操作失败' });
+        Message.error({ message });
       });
   };
 

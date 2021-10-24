@@ -1,6 +1,6 @@
 {
   "name": "element-react-dataview",
-  "version": "0.9.10",
+  "version": "0.9.11",
   "description": "React data view components library, based on element-react.",
   "keywords": [
     "react",
@@ -44,11 +44,11 @@
     "webpack-cli": "^3.3.10"
   },
   "peerDependencies": {
-    "element-react": "^1.4.19",
-    "mobx": "^5.0.2",
-    "mobx-react": "^5.2.3",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "element-react": "*",
+    "mobx": "*",
+    "mobx-react": "*",
+    "react": "*",
+    "react-dom": "*"
   },
   "pre-commit": "lint",
   "sideEffects": [
