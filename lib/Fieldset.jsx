@@ -16,7 +16,8 @@ function computeValue(value, context, formdata, scope) {
 function createChangeHandler(props, { name, onChange: fieldOnChange }) {
   return function onChangeHandler(v) {
     const {
-      value = {},
+      // avoid original `props.value` being frozen and can set new value
+      value: { ...value } = {},
       fields,
       dataform,
       onChange
