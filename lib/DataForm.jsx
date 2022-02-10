@@ -24,6 +24,8 @@ Form.Item.prototype.fieldValue = function fieldValue() {
 
 @observer
 class DataForm extends React.Component {
+  // TODO(optimize):
+  // @see https://zh-hans.reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
   static getDerivedStateFromProps({ model, onChange }, state) {
     return onChange ? model : (state || model);
   }
@@ -42,7 +44,7 @@ class DataForm extends React.Component {
       const field = form.state.fields.find(f => f.props.prop === name);
       if (field) {
         field.setState({
-          error: errors[name],
+          error: errors[name].map(error => error.replace(`"${name}"`, field.props.label)),
           validating: false,
           valid: true
         }, () => {
