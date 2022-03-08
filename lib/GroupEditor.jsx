@@ -54,7 +54,7 @@ class GroupEditor extends React.Component {
   }
 
   renderFieldsRow(row, index) {
-    const { fields } = this.props;
+    const { fields, dataform } = this.props;
     const rowKey = row.id ? `data_${row.id}` : `temp_${index}`;
     return (
       <tr key={rowKey}>
@@ -65,6 +65,7 @@ class GroupEditor extends React.Component {
           fieldWrapperProps={{
             Component: 'td'
           }}
+          dataform={dataform}
         />
         {this.renderRemoveButton(row, index)}
       </tr>

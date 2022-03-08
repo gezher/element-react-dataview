@@ -47,7 +47,8 @@ export default function Fieldset(props) {
     fields,
     fieldWrapperProps: {
       Component = React.Fragment
-    } = {}
+    } = {},
+    dataform
   } = props;
 
   return (
@@ -80,6 +81,7 @@ export default function Fieldset(props) {
                 {...options}
                 value={getByNamespace(data, options.name)}
                 onChange={createChangeHandler(props, options)}
+                dataform={dataform}
               />
             </Wrapper>
           );
